@@ -431,6 +431,71 @@
     font-weight: 400;
   }
 
+  /* ============ PODIUM OVERLAY ============ */
+  .section-label-btn {
+    background: none; border: none; padding: 0;
+    font: inherit; color: inherit; letter-spacing: inherit;
+    text-transform: inherit; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .section-label-btn::after { content: '🏆'; font-size: 14px; opacity: 0.5; transition: opacity 0.2s; }
+  .section-label-btn:hover::after { opacity: 1; }
+
+  .podium-overlay {
+    position: fixed; inset: 0;
+    background: rgba(26,42,31,0.88);
+    z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  #podium-confetti {
+    position: fixed; inset: 0; pointer-events: none; z-index: 199;
+  }
+  .podium-content {
+    background: var(--card); border-radius: var(--radius);
+    padding: 40px 32px 32px; max-width: 500px; width: 100%;
+    text-align: center; position: relative; z-index: 201;
+    animation: podiumEnter 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes podiumEnter {
+    from { transform: scale(0.4) translateY(60px); opacity: 0; }
+    to   { transform: scale(1) translateY(0);      opacity: 1; }
+  }
+  .podium-congrats {
+    font-family: var(--font-display); font-size: 38px; font-weight: 700;
+    color: var(--accent); line-height: 1; margin-bottom: 4px;
+  }
+  .podium-sub {
+    font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 36px;
+  }
+  .podium-stage {
+    display: flex; align-items: flex-end; justify-content: center; gap: 6px; margin-bottom: 32px;
+  }
+  .podium-step { display: flex; flex-direction: column; align-items: center; width: 140px; }
+  .podium-medal { font-size: 26px; margin-bottom: 4px; }
+  .podium-name {
+    font-family: var(--font-display); font-size: 14px; font-weight: 600;
+    color: var(--ink); margin-bottom: 4px; text-align: center; line-height: 1.2;
+  }
+  .podium-pts { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+  .podium-bar {
+    width: 100%; border-radius: 8px 8px 0 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 32px; font-weight: 700; color: white;
+  }
+  .podium-step.p1 .podium-bar { height: 130px; background: var(--gold); }
+  .podium-step.p2 .podium-bar { height: 90px;  background: var(--ink-soft); }
+  .podium-step.p3 .podium-bar { height: 65px;  background: var(--terracotta); }
+  .podium-step.p1 { animation: podiumRise 0.5s 0.3s cubic-bezier(0.34,1.4,0.64,1) both; }
+  .podium-step.p2 { animation: podiumRise 0.5s 0.5s cubic-bezier(0.34,1.4,0.64,1) both; }
+  .podium-step.p3 { animation: podiumRise 0.5s 0.7s cubic-bezier(0.34,1.4,0.64,1) both; }
+  @keyframes podiumRise { from { transform: translateY(40px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+  .podium-close {
+    background: var(--accent); color: white; border: none; border-radius: var(--radius-sm);
+    padding: 12px 36px; font-family: var(--font-body); font-size: 14px; font-weight: 600;
+    cursor: pointer; letter-spacing: 0.04em;
+  }
+  .podium-close:hover { background: var(--ink); }
+
   /* ============ QR CODE SECTION (on screen) ============ */
   .screen-footer {
     margin-top: 32px;
@@ -2466,6 +2531,97 @@ function formatTime(seconds) {
 // ============================================================
 let _audioCtx = null;
 
+// ============================================================
+// PODIUM & CONFETTIS
+// ============================================================
+let _confettiRAF = null;
+
+function startConfetti() {
+  const canvas = document.getElementById('podium-confetti');
+  if (!canvas) return;
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#c4963c','#1f4a38','#b85c38','#f4efe6','#3a6b55','#e8d5a3','#fff','#9A99FE'];
+  const pieces = Array.from({ length: 140 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -300,
+    w: Math.random() * 10 + 5,
+    h: Math.random() * 6 + 3,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    speed: Math.random() * 2.5 + 1.5,
+    angle: Math.random() * Math.PI * 2,
+    spin: (Math.random() - 0.5) * 0.18,
+    drift: (Math.random() - 0.5) * 1.5,
+  }));
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+      p.y += p.speed; p.x += p.drift; p.angle += p.spin;
+      if (p.y > canvas.height) { p.y = -12; p.x = Math.random() * canvas.width; }
+    });
+    _confettiRAF = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function stopConfetti() {
+  if (_confettiRAF) { cancelAnimationFrame(_confettiRAF); _confettiRAF = null; }
+  const canvas = document.getElementById('podium-confetti');
+  if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function showPodium() {
+  const lb = getLeaderboard();
+  const top = [lb[0], lb[1], lb[2]].map(t => t ? { name: teamDisplayName(t), score: t.score } : { name: '—', score: 0 });
+  const medals = ['🥇','🥈','🥉'];
+  // Order: 2nd | 1st | 3rd (podium classique)
+  const order = [
+    { ...top[1], rank: 2, cls: 'p2', medal: medals[1] },
+    { ...top[0], rank: 1, cls: 'p1', medal: medals[0] },
+    { ...top[2], rank: 3, cls: 'p3', medal: medals[2] },
+  ];
+  const html = `
+    <canvas id="podium-confetti"></canvas>
+    <div class="podium-overlay" id="podium-overlay">
+      <div class="podium-content">
+        <div class="podium-congrats">Félicitations !</div>
+        <div class="podium-sub">à toutes les équipes · challenge capeo</div>
+        <div class="podium-stage">
+          ${order.map(t => `
+            <div class="podium-step ${t.cls}">
+              <div class="podium-medal">${t.medal}</div>
+              <div class="podium-name">${escapeHtml(t.name)}</div>
+              <div class="podium-pts">${t.score} pts</div>
+              <div class="podium-bar">${t.rank}</div>
+            </div>
+          `).join('')}
+        </div>
+        <button class="podium-close" id="podium-close-btn">Fermer</button>
+      </div>
+    </div>
+  `;
+  const wrapper = document.createElement('div');
+  wrapper.id = 'podium-wrapper';
+  wrapper.innerHTML = html;
+  document.body.appendChild(wrapper);
+  startConfetti();
+  document.getElementById('podium-close-btn').onclick = closePodium;
+  document.getElementById('podium-overlay').onclick = (e) => { if (e.target === e.currentTarget) closePodium(); };
+}
+
+function closePodium() {
+  stopConfetti();
+  const el = document.getElementById('podium-wrapper');
+  if (el) el.remove();
+}
+
 // Unlock AudioContext on first user interaction (browser autoplay policy)
 document.addEventListener('click',     () => { if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); else if (_audioCtx.state === 'suspended') _audioCtx.resume(); }, { once: false });
 document.addEventListener('touchstart',() => { if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); else if (_audioCtx.state === 'suspended') _audioCtx.resume(); }, { once: false });
@@ -3032,7 +3188,7 @@ function renderLive() {
         </div>
 
         <div>
-          <div class="section-label">Classement</div>
+          <button class="section-label section-label-btn" data-action="show-podium">Classement</button>
           <div class="leaderboard">
             <div class="leaderboard-list ${state.leaderboardRevealed ? '' : 'blurred'}">
               ${leaderboard.map((t, i) => `
@@ -3858,6 +4014,10 @@ function attachEventHandlers(route) {
       render();
     };
   });
+  document.querySelectorAll('[data-action="show-podium"]').forEach(btn => {
+    btn.onclick = () => showPodium();
+  });
+
   document.querySelectorAll('[data-action="toggle-leaderboard"]').forEach(btn => {
     btn.onclick = async () => {
       state.leaderboardRevealed = !state.leaderboardRevealed;
