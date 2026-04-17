@@ -264,6 +264,11 @@
     color: var(--ink);
   }
   .timer-display.paused { color: var(--muted); }
+  @keyframes timerAlert {
+    0%, 100% { color: var(--danger); opacity: 1; }
+    50%       { color: var(--danger); opacity: 0.25; }
+  }
+  .timer-display.alert { animation: timerAlert 1s ease-in-out infinite; }
 
   .rotation-indicator {
     display: flex;
@@ -2452,6 +2457,32 @@ function formatTime(seconds) {
 }
 
 // Check every second if phase should transition automatically
+// ============================================================
+// AUDIO ALERT
+// ============================================================
+let _audioCtx = null;
+
+// Unlock AudioContext on first user interaction (browser autoplay policy)
+document.addEventListener('click',     () => { if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); else if (_audioCtx.state === 'suspended') _audioCtx.resume(); }, { once: false });
+document.addEventListener('touchstart',() => { if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)(); else if (_audioCtx.state === 'suspended') _audioCtx.resume(); }, { once: false });
+
+function playBeep() {
+  try {
+    if (!_audioCtx) return;
+    if (_audioCtx.state === 'suspended') _audioCtx.resume();
+    const osc  = _audioCtx.createOscillator();
+    const gain = _audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(_audioCtx.destination);
+    osc.type = 'sine';
+    osc.frequency.value = 880;
+    gain.gain.setValueAtTime(0.25, _audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, _audioCtx.currentTime + 0.25);
+    osc.start(_audioCtx.currentTime);
+    osc.stop(_audioCtx.currentTime + 0.25);
+  } catch(e) {}
+}
+
 setInterval(() => {
   if (state.phase !== 'idle' && !state.timerPaused && state.timerEnd && Date.now() >= state.timerEnd) {
     if (state.phase === 'epreuve') {
@@ -2481,9 +2512,14 @@ setInterval(() => {
 
 function updateTimerDisplays() {
   const remaining = getTimerRemaining();
+  const isAlert = state.phase === 'epreuve' && !state.timerPaused && remaining <= 60 && remaining > 0;
   document.querySelectorAll('[data-timer]').forEach(el => {
     el.textContent = formatTime(remaining);
+    el.classList.toggle('alert', isAlert);
+    el.classList.toggle('paused', !!state.timerPaused);
   });
+  // Bip toutes les secondes pendant la dernière minute
+  if (isAlert) playBeep();
 }
 
 // ============================================================
