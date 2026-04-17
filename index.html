@@ -2488,21 +2488,29 @@ function playEndAlarm() {
     if (!_audioCtx) return;
     if (_audioCtx.state === 'suspended') _audioCtx.resume();
     const t = _audioCtx.currentTime;
-    // 3 ascending beeps — long, fort, marqué
-    [0, 0.35, 0.70].forEach((offset, i) => {
-      const freq = [660, 880, 1100][i];
-      const osc  = _audioCtx.createOscillator();
-      const gain = _audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(_audioCtx.destination);
+    // 3 sonneries type réveil — tremolo carré à 12 Hz
+    for (let ring = 0; ring < 3; ring++) {
+      const s = t + ring * 0.8;
+      const osc     = _audioCtx.createOscillator();
+      const master  = _audioCtx.createGain();
+      const lfo     = _audioCtx.createOscillator();
+      const lfoGain = _audioCtx.createGain();
+      // Tonalité porteuse
       osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0, t + offset);
-      gain.gain.linearRampToValueAtTime(0.5, t + offset + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.28);
-      osc.start(t + offset);
-      osc.stop(t + offset + 0.3);
-    });
+      osc.frequency.value = 1050;
+      // LFO carré → effet sonnerie
+      lfo.type = 'square';
+      lfo.frequency.value = 12;
+      lfoGain.gain.value = 0.35;
+      lfo.connect(lfoGain);
+      lfoGain.connect(master.gain);
+      osc.connect(master);
+      master.connect(_audioCtx.destination);
+      master.gain.setValueAtTime(0.45, s);
+      master.gain.setValueAtTime(0.001, s + 0.55);
+      osc.start(s); osc.stop(s + 0.6);
+      lfo.start(s); lfo.stop(s + 0.6);
+    }
   } catch(e) {}
 }
 
