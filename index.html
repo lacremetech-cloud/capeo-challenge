@@ -2596,20 +2596,11 @@ function renderTeamsCalcResult(count) {
       </div>
     `;
   }
-  const perTeam = Math.floor(count / 10);
-  const remainder = count % 10;
-  const mainNum = remainder >= 5 ? perTeam + 1 : perTeam;
-  let detail;
-  if (remainder === 0) {
-    detail = `10 équipes de <strong>${perTeam}</strong>`;
-  } else {
-    detail = `${remainder} équipe${remainder > 1 ? 's' : ''} de ${perTeam + 1} · ${10 - remainder} équipe${(10 - remainder) > 1 ? 's' : ''} de ${perTeam}`;
-  }
+  const perTeam = Math.round(count / 10);
   return `
     <div class="brief-teams-calc-result-num">${count}</div>
     <div class="brief-teams-calc-result-eq">÷ 10 équipes</div>
-    <div class="brief-teams-calc-result-text">≈ <strong>${mainNum}</strong> participantes par équipe</div>
-    ${remainder !== 0 ? `<div style="margin-top:6px;font-size:12px;color:var(--muted);text-align:center">${detail}</div>` : ''}
+    <div class="brief-teams-calc-result-text">10 équipes de <strong>~${perTeam}</strong> participantes</div>
   `;
 }
 
