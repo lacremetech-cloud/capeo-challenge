@@ -2567,7 +2567,7 @@ function render() {
 function renderRoleBar(route) {
   const roles = [
     { k: 'screen',  label: 'Projection', hash: '#/screen' },
-    { k: 'live',    label: 'Live',    hash: '#/live' },
+    { k: 'live',    label: 'Live Challenge',    hash: '#/live' },
     { k: 'cap',     label: 'Capitaine', hash: '#/cap' },
     { k: 'resp',    label: 'Responsable', hash: '#/resp' },
     { k: 'admin',   label: 'Admin',   hash: '#/admin' },
@@ -2841,10 +2841,10 @@ function renderBriefingSlide(key) {
             <div class="brief-webapp-role">
               <div class="brief-webapp-role-letter">C</div>
               <div class="brief-webapp-role-content">
-                <div class="brief-webapp-role-title">Capitaines d'équipe</div>
+                <div class="brief-webapp-role-title">Capitaines</div>
                 <div class="brief-webapp-role-desc">
-                  Sélectionnez votre équipe, entrez votre code et suivez en direct votre atelier
-                  actuel, le prochain, et les points reçus.
+                  Votre tableau de bord : suivez le chrono, l'atelier en cours, l'atelier suivant, vos points.
+                  Scannez le QR code, entrez votre code personnel, rendez-vous dans l'onglet Capitaine.
                 </div>
               </div>
             </div>
@@ -2853,8 +2853,8 @@ function renderBriefingSlide(key) {
               <div class="brief-webapp-role-content">
                 <div class="brief-webapp-role-title">Responsables d'ateliers</div>
                 <div class="brief-webapp-role-desc">
-                  Sélectionnez votre atelier avec le code organisatrice, puis saisissez les
-                  résultats à la fin de chaque rotation.
+                  Vous saisissez les résultats. C'est vous qui faites tomber les points.
+                  Scannez le QR code, entrez le code organisatrice, rendez-vous dans l'onglet Responsable.
                 </div>
               </div>
             </div>
@@ -2863,8 +2863,7 @@ function renderBriefingSlide(key) {
               <div class="brief-webapp-role-content">
                 <div class="brief-webapp-role-title">Participantes</div>
                 <div class="brief-webapp-role-desc">
-                  Visualisez le classement en direct sur l'écran projeté et encouragez
-                  votre équipe.
+                  Suivez le planning en direct sur l'onglet Live Challenge.
                 </div>
               </div>
             </div>
