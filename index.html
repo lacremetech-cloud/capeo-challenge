@@ -3434,6 +3434,7 @@ function renderAdmin() {
         ` : ''}
 
         <button class="admin-btn" data-action="goto-screen">Ouvrir le live</button>
+        <button class="admin-btn" data-action="test-alarm" title="Simule les 65 dernières secondes d'une épreuve">🔔 Tester l'alarme</button>
         <button class="admin-btn danger" data-action="reset-all">Tout réinitialiser</button>
       </div>
 
@@ -3818,6 +3819,16 @@ function attachEventHandlers(route) {
       render();
     };
   });
+  document.querySelectorAll('[data-action="test-alarm"]').forEach(btn => {
+    btn.onclick = () => {
+      state.phase = 'epreuve';
+      state.timerEnd = Date.now() + 65000;
+      state.timerPaused = false;
+      render();
+      showToast('Alarme dans ~5 secondes — montez le volume !');
+    };
+  });
+
   document.querySelectorAll('[data-action="goto-screen"]').forEach(btn => {
     btn.onclick = async () => {
       const url = window.location.origin + window.location.pathname + '#/live';
