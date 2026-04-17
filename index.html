@@ -2598,17 +2598,18 @@ function renderTeamsCalcResult(count) {
   }
   const perTeam = Math.floor(count / 10);
   const remainder = count % 10;
-  // remainder teams get (perTeam + 1), rest get perTeam
-  let repartitionText;
+  const mainNum = remainder >= 5 ? perTeam + 1 : perTeam;
+  let detail;
   if (remainder === 0) {
-    repartitionText = `<strong>${perTeam}</strong> participantes par équipe`;
+    detail = `10 équipes de <strong>${perTeam}</strong>`;
   } else {
-    repartitionText = `${remainder} équipe${remainder > 1 ? 's' : ''} de <strong>${perTeam + 1}</strong>, ${10 - remainder} équipe${(10 - remainder) > 1 ? 's' : ''} de <strong>${perTeam}</strong>`;
+    detail = `${remainder} équipe${remainder > 1 ? 's' : ''} de ${perTeam + 1} · ${10 - remainder} équipe${(10 - remainder) > 1 ? 's' : ''} de ${perTeam}`;
   }
   return `
     <div class="brief-teams-calc-result-num">${count}</div>
     <div class="brief-teams-calc-result-eq">÷ 10 équipes</div>
-    <div class="brief-teams-calc-result-text">${repartitionText}</div>
+    <div class="brief-teams-calc-result-text">≈ <strong>${mainNum}</strong> participantes par équipe</div>
+    ${remainder !== 0 ? `<div style="margin-top:6px;font-size:12px;color:var(--muted);text-align:center">${detail}</div>` : ''}
   `;
 }
 
