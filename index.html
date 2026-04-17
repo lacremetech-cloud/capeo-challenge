@@ -2474,7 +2474,7 @@ setInterval(() => {
   }
   // Re-render timer displays
   const route = getRoute();
-  if (['screen', 'cap', 'admin'].includes(route)) {
+  if (['screen', 'cap', 'admin', 'live'].includes(route)) {
     updateTimerDisplays();
   }
 }, 1000);
@@ -2927,6 +2927,9 @@ function renderLive() {
         <div class="timer-block">
           <div class="timer-phase ${phaseClass}">${phaseLabel}</div>
           <div class="timer-display ${state.timerPaused ? 'paused' : ''}" data-timer>${formatTime(remaining)}</div>
+          <div style="margin-top:8px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-align:center">
+            Rotation ${state.currentRotation > 0 ? state.currentRotation : '—'} / ${N_ROTATIONS}
+          </div>
         </div>
       </div>
 
