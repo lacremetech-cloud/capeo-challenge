@@ -1,0 +1,3898 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Challenge CAPEO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter+Tight:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #f4efe6;
+    --bg-soft: #ebe3d5;
+    --ink: #1a2a1f;
+    --ink-soft: #3d4a3f;
+    --muted: #7a7265;
+    --card: #faf6ed;
+    --accent: #1f4a38;
+    --accent-soft: #3a6b55;
+    --terracotta: #b85c38;
+    --gold: #c4963c;
+    --line: #d7ccb9;
+    --danger: #a8321e;
+    --shadow: 0 1px 2px rgba(26, 42, 31, 0.04), 0 8px 24px rgba(26, 42, 31, 0.06);
+    --shadow-lg: 0 1px 2px rgba(26, 42, 31, 0.04), 0 24px 64px rgba(26, 42, 31, 0.12);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter Tight', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 10%, rgba(31, 74, 56, 0.04) 0%, transparent 40%),
+                      radial-gradient(circle at 80% 90%, rgba(184, 92, 56, 0.04) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
+  input, select {
+    font-family: inherit;
+    color: inherit;
+  }
+
+  /* ============ ROOT LAYOUT ============ */
+  .app {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ============ ROLE SWITCHER (subtle, top-right) ============ */
+  .role-bar {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    display: flex;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px;
+    box-shadow: var(--shadow);
+  }
+  .role-bar button {
+    padding: 6px 12px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-radius: 999px;
+    transition: all 0.2s ease;
+  }
+  .role-bar button:hover { color: var(--ink); }
+  .role-bar button.active {
+    background: var(--accent);
+    color: var(--card);
+  }
+
+  /* ============ SCREEN: LANDING ============ */
+  .landing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .landing-ornament {
+    width: 80px;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 auto 32px;
+    position: relative;
+  }
+  .landing-ornament::before, .landing-ornament::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateY(-50%);
+  }
+  .landing-ornament::before { left: -16px; }
+  .landing-ornament::after { right: -16px; }
+  .landing-kicker {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .landing h1 {
+    font-family: var(--font-display);
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+  .landing h1 em {
+    font-style: italic;
+    color: var(--terracotta);
+    font-variation-settings: 'opsz' 144;
+  }
+  .landing-sub {
+    font-size: 16px;
+    color: var(--ink-soft);
+    max-width: 520px;
+    margin: 0 auto 48px;
+    line-height: 1.6;
+  }
+  .role-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    max-width: 800px;
+    width: 100%;
+  }
+  .role-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    text-align: left;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .role-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+  }
+  .role-card-icon {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    font-style: italic;
+  }
+  .role-card-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .role-card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ============ PROJECTION SCREEN ============ */
+  .screen {
+    min-height: 100vh;
+    padding: 48px 64px;
+    display: flex;
+    flex-direction: column;
+  }
+  .screen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+  }
+  .screen-title-block .kicker {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .screen-title-block h1 {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .screen-title-block h1 em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .timer-block {
+    text-align: right;
+  }
+  .timer-phase {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .timer-phase.active-epreuve { color: var(--accent); }
+  .timer-phase.active-transition { color: var(--terracotta); }
+  .timer-display {
+    font-family: var(--font-display);
+    font-size: 88px;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144, 'wght' 400;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-feature-settings: 'tnum' 1;
+    color: var(--ink);
+  }
+  .timer-display.paused { color: var(--muted); }
+
+  .rotation-indicator {
+    display: flex;
+    gap: 8px;
+    margin: 24px 0 40px;
+    align-items: center;
+  }
+  .rotation-dot {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.3s ease;
+  }
+  .rotation-dot.done {
+    background: var(--accent-soft);
+    border-color: var(--accent-soft);
+    color: var(--card);
+  }
+  .rotation-dot.current {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--card);
+    transform: scale(1.15);
+    box-shadow: 0 0 0 4px rgba(31, 74, 56, 0.15);
+  }
+  .rotation-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .screen-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    flex: 1;
+  }
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-weight: 400;
+  }
+
+  .ateliers-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .atelier-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .atelier-card.highlight {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--card);
+  }
+  .atelier-card.highlight .atelier-letter { color: var(--gold); }
+  .atelier-card.highlight .atelier-teams-label { color: rgba(250, 246, 237, 0.6); }
+  .atelier-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .atelier-letter {
+    font-family: var(--font-display);
+    font-size: 44px;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144;
+    font-style: italic;
+    color: var(--terracotta);
+    line-height: 0.9;
+  }
+  .atelier-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .atelier-teams-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .atelier-teams {
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .atelier-teams-empty {
+    font-size: 14px;
+    font-style: italic;
+    opacity: 0.5;
+  }
+
+  .leaderboard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .leaderboard-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    align-items: center;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--line);
+    gap: 12px;
+  }
+  .leaderboard-row:last-child { border-bottom: none; }
+  .leaderboard-rank {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .leaderboard-row.top-1 .leaderboard-rank { color: var(--gold); font-size: 22px; }
+  .leaderboard-row.top-2 .leaderboard-rank { color: var(--terracotta); }
+  .leaderboard-row.top-3 .leaderboard-rank { color: var(--accent-soft); }
+  .leaderboard-name {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .leaderboard-score {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    font-feature-settings: 'tnum' 1;
+  }
+  .leaderboard-score-max {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  /* ============ QR CODE SECTION (on screen) ============ */
+  .screen-footer {
+    margin-top: 32px;
+    padding: 20px 24px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .screen-footer-text {
+    flex: 1;
+  }
+  .screen-footer-text .kicker {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .screen-footer-text .url {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--accent);
+    word-break: break-all;
+  }
+  .qr-box {
+    width: 100px;
+    height: 100px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .qr-box img { width: 100%; height: 100%; }
+
+  /* ============ MOBILE VIEWS (capitaine, responsable) ============ */
+  .mobile-view {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 24px 20px 120px;
+    min-height: 100vh;
+  }
+  .mobile-header {
+    margin-bottom: 32px;
+    padding-top: 20px;
+  }
+  .mobile-header .kicker {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .mobile-header h1 {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--accent);
+  }
+  .mobile-header h1 em { font-style: italic; color: var(--terracotta); }
+
+  /* Login card */
+  .login-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+  }
+  .login-card .form-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: block;
+    font-weight: 500;
+  }
+  .login-card select,
+  .login-card input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    transition: border-color 0.2s;
+  }
+  .login-card select:focus,
+  .login-card input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .login-card .submit-btn {
+    width: 100%;
+    background: var(--accent);
+    color: var(--card);
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: background 0.2s;
+  }
+  .login-card .submit-btn:hover { background: var(--ink); }
+  .login-card .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    margin-top: -12px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  /* Capitaine dashboard */
+  .cap-status {
+    background: var(--accent);
+    color: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cap-status::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+    background: rgba(196, 150, 60, 0.15);
+    border-radius: 50%;
+  }
+  .cap-status .kicker {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    font-weight: 500;
+    position: relative;
+  }
+  .cap-status-letter {
+    font-family: var(--font-display);
+    font-size: 96px;
+    font-variation-settings: 'opsz' 144;
+    font-style: italic;
+    color: var(--gold);
+    line-height: 0.85;
+    position: relative;
+  }
+  .cap-status-name {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-top: 4px;
+    position: relative;
+  }
+  .cap-status-timer {
+    position: relative;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(250, 246, 237, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .cap-status-timer-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(250, 246, 237, 0.7);
+  }
+  .cap-status-timer-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    font-feature-settings: 'tnum' 1;
+    color: var(--gold);
+  }
+
+  .cap-next, .cap-scores {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .cap-next .kicker, .cap-scores .kicker {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .cap-next-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .cap-next-letter {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-style: italic;
+    color: var(--terracotta);
+    font-variation-settings: 'opsz' 144;
+    line-height: 0.9;
+  }
+  .cap-next-name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .cap-next-empty {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .cap-scores-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cap-score-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .cap-score-row:last-child { border-bottom: none; }
+  .cap-score-letter {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .cap-score-name {
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .cap-score-value {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    font-feature-settings: 'tnum' 1;
+  }
+  .cap-score-pending {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .cap-total {
+    background: var(--bg-soft);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+  }
+  .cap-total-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .cap-total-value {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  /* Responsable view */
+  .resp-rotation-badge {
+    background: var(--accent);
+    color: var(--card);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+  .resp-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .resp-atelier-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 20px;
+  }
+  .resp-atelier-letter {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-style: italic;
+    color: var(--terracotta);
+    line-height: 0.85;
+    font-variation-settings: 'opsz' 144;
+  }
+  .resp-atelier-info .kicker {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .resp-atelier-name {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .resp-teams-section h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .resp-no-teams {
+    padding: 32px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+  }
+
+  .resp-outcome-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .resp-outcome-btn {
+    padding: 14px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    transition: all 0.15s ease;
+  }
+  .resp-outcome-btn:hover { border-color: var(--accent); }
+  .resp-outcome-btn.win {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--card);
+  }
+  .resp-outcome-btn.tie {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+  .resp-outcome-btn.lose {
+    background: var(--bg-soft);
+    border-color: var(--line);
+  }
+
+  .resp-team-row {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .resp-team-row:last-child { border-bottom: none; }
+  .resp-team-name {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  /* Free-form rotation table */
+  .resp-free-hint {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--gold);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+  .resp-rotations {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .resp-rotation-row {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .resp-rotation-row.current {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(31, 74, 56, 0.08);
+  }
+  .resp-rotation-row.done {
+    background: var(--card);
+  }
+  .resp-rotation-row.expanded {
+    background: var(--card);
+  }
+  .resp-rotation-head {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    background: transparent;
+    text-align: left;
+    transition: background 0.15s;
+  }
+  .resp-rotation-head:hover {
+    background: var(--bg-soft);
+  }
+  .resp-rotation-row.expanded .resp-rotation-head {
+    background: transparent;
+  }
+  .resp-rotation-num {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    background: var(--bg-soft);
+    border-radius: 8px;
+    min-width: 54px;
+  }
+  .resp-rotation-row.current .resp-rotation-num {
+    background: var(--accent);
+  }
+  .resp-rotation-num-label {
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .resp-rotation-row.current .resp-rotation-num-label {
+    color: rgba(250, 246, 237, 0.7);
+  }
+  .resp-rotation-num-value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .resp-rotation-row.current .resp-rotation-num-value {
+    color: var(--gold);
+  }
+  .resp-rotation-teams {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+  .resp-rotation-team-a, .resp-rotation-team-b {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .resp-rotation-vs {
+    font-size: 10px;
+    font-style: italic;
+    color: var(--muted);
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+  }
+  .resp-rotation-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .resp-rotation-badge-live {
+    background: var(--accent);
+    color: var(--gold);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .resp-rotation-score {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--accent);
+    font-feature-settings: 'tnum' 1;
+  }
+  .resp-rotation-pending {
+    font-size: 11px;
+    color: var(--muted);
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+  .resp-rotation-chevron {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .resp-rotation-body {
+    padding: 8px 14px 18px;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    animation: rowExpand 0.2s ease-out;
+  }
+  @keyframes rowExpand {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .resp-physical-notice {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--gold);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  .resp-sub-section {
+    margin-bottom: 20px;
+  }
+  .resp-sub-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .resp-submit {
+    width: 100%;
+    background: var(--accent);
+    color: var(--card);
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 12px;
+    transition: background 0.2s;
+  }
+  .resp-submit:hover { background: var(--ink); }
+  .resp-submit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: var(--muted);
+  }
+  .resp-submitted {
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    margin-top: 12px;
+  }
+  .resp-submitted::before {
+    content: '✓ ';
+    font-weight: 700;
+  }
+
+  /* ============ ADMIN VIEW ============ */
+  .admin-view {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+  }
+  .admin-header h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+  }
+  .admin-header h1 em { font-style: italic; color: var(--terracotta); }
+
+  .admin-controls {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+  .admin-btn {
+    padding: 14px 18px;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink);
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .admin-btn:hover { background: var(--bg-soft); border-color: var(--accent); }
+  .admin-btn.primary {
+    background: var(--accent);
+    color: var(--card);
+    border-color: var(--accent);
+  }
+  .admin-btn.primary:hover { background: var(--ink); }
+  .admin-btn.danger { color: var(--danger); }
+  .admin-btn.danger:hover { background: #fbe9e5; border-color: var(--danger); }
+
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .admin-section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+  .admin-section h2 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .admin-state-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .admin-state-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .admin-state-row:last-child { border-bottom: none; }
+  .admin-state-label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .admin-state-value {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .admin-timer {
+    text-align: center;
+    padding: 20px;
+    background: var(--bg-soft);
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+  }
+  .admin-timer-value {
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 500;
+    font-feature-settings: 'tnum' 1;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .admin-timer-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .admin-timer-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .admin-rot-buttons {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .admin-rot-btn {
+    padding: 10px 4px;
+    border-radius: 8px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .admin-rot-btn.current {
+    background: var(--accent);
+    color: var(--card);
+    border-color: var(--accent);
+  }
+
+  .admin-scores-table {
+    width: 100%;
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .admin-scores-table th {
+    text-align: left;
+    padding: 8px 6px;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    border-bottom: 1px solid var(--line);
+  }
+  .admin-scores-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  .admin-scores-table td.name {
+    font-weight: 500;
+  }
+  .admin-scores-table td.total {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 16px;
+  }
+  .admin-scores-table td.letter {
+    font-family: var(--font-display);
+    text-align: center;
+    color: var(--accent);
+    font-feature-settings: 'tnum' 1;
+  }
+  .admin-scores-table td.empty {
+    text-align: center;
+    color: var(--line);
+  }
+
+  .setup-hint {
+    background: var(--bg-soft);
+    border-left: 3px solid var(--gold);
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+
+  .admin-config {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .admin-config-col h3 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-style: italic;
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 10px;
+  }
+  .admin-config-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .admin-config-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .admin-config-row .prefix {
+    font-family: var(--font-display);
+    font-size: 14px;
+    color: var(--terracotta);
+    width: 20px;
+    font-style: italic;
+  }
+
+  /* ============ CONFIRM MODAL ============ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26, 42, 31, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+  }
+  .modal-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--line);
+  }
+  .modal-card h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .modal-card p {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+  }
+  .modal-btn {
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+  .modal-btn.cancel {
+    background: var(--bg-soft);
+    color: var(--ink-soft);
+  }
+  .modal-btn.cancel:hover { background: var(--line); }
+  .modal-btn.confirm {
+    background: var(--accent);
+    color: var(--card);
+  }
+  .modal-btn.confirm:hover { background: var(--ink); }
+  .modal-btn.confirm.danger { background: var(--danger); }
+  .modal-btn.confirm.danger:hover { background: #8e2816; }
+
+  /* ============ TOAST ============ */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--card);
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 1001;
+    animation: toastIn 0.3s ease-out;
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translate(-50%, 8px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  /* ============ BRIEFING CAROUSEL ============ */
+  .brief {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding: 40px 48px 80px;
+  }
+  .brief-nav {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--card);
+    padding: 10px 18px;
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+  }
+  .brief-nav-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: all 0.15s;
+  }
+  .brief-nav-btn:hover:not(:disabled) {
+    background: var(--accent);
+    color: var(--card);
+  }
+  .brief-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .brief-nav-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .brief-nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+  .brief-nav-dot.active {
+    background: var(--accent);
+    width: 24px;
+    border-radius: 999px;
+  }
+  .brief-nav-live {
+    background: var(--accent);
+    color: var(--card);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: background 0.2s;
+    margin-left: 8px;
+  }
+  .brief-nav-live:hover { background: var(--ink); }
+
+  .brief-slide {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    animation: slideFade 0.4s ease-out;
+  }
+  @keyframes slideFade {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .brief-kicker {
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .brief-title {
+    font-family: var(--font-display);
+    font-size: clamp(56px, 8vw, 96px);
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .brief-title em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .brief-lead {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.5vw, 28px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    max-width: 880px;
+    margin-bottom: 40px;
+  }
+
+  /* Slide 1: Bienvenue (centered, no QR) */
+  .brief-welcome-centered {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .brief-welcome-title {
+    font-family: var(--font-display);
+    font-size: clamp(72px, 12vw, 140px);
+    font-weight: 400;
+    font-variation-settings: 'opsz' 144;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--accent);
+    margin-bottom: 32px;
+  }
+  .brief-welcome-title em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .brief-welcome-sub {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.8vw, 30px);
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-soft);
+    max-width: 720px;
+    line-height: 1.4;
+  }
+
+  /* Slide 1: Bienvenue */
+  .brief-welcome {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 48px;
+    align-items: center;
+    flex: 1;
+  }
+  .brief-welcome-right {
+    text-align: center;
+    padding: 32px;
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+  }
+  .brief-qr {
+    width: 260px;
+    height: 260px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    margin: 0 auto 20px;
+  }
+  .brief-qr img { width: 100%; height: 100%; }
+  .brief-qr-label {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    font-style: italic;
+    margin-bottom: 6px;
+    color: var(--accent);
+  }
+  .brief-qr-url {
+    font-size: 13px;
+    color: var(--muted);
+    word-break: break-all;
+  }
+
+  /* Slide 2: Concept — stat numbers (3 stats version) */
+  .brief-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-top: 32px;
+  }
+  .brief-stats.brief-stats-3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 900px;
+  }
+  .brief-stat {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    text-align: center;
+  }
+  .brief-stat-num {
+    font-family: var(--font-display);
+    font-size: clamp(72px, 10vw, 120px);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 400;
+    line-height: 0.9;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+  }
+  .brief-stat-num em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .brief-stat-label {
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* Slide 4: Atelier fonctionnement */
+  .brief-atelier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+  }
+  .brief-atelier-step {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    position: relative;
+  }
+  .brief-atelier-step-num {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-style: italic;
+    color: var(--terracotta);
+    line-height: 0.9;
+    margin-bottom: 12px;
+    font-variation-settings: 'opsz' 144;
+  }
+  .brief-atelier-step-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .brief-atelier-step-desc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .brief-atelier-footer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+    background: var(--accent);
+    color: var(--card);
+    padding: 24px 28px;
+    border-radius: var(--radius);
+  }
+  .brief-atelier-footer-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .brief-atelier-footer-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(250, 246, 237, 0.7);
+    font-weight: 500;
+  }
+  .brief-atelier-footer-value {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 500;
+    color: var(--gold);
+    line-height: 1;
+    font-variation-settings: 'opsz' 144;
+  }
+  .brief-atelier-footer-value em {
+    font-style: italic;
+  }
+
+  /* Slide 5: Teams calculator */
+  .brief-teams-calc {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 32px;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 40px;
+    margin-top: 24px;
+  }
+  .brief-teams-calc-left {
+    text-align: left;
+  }
+  .brief-teams-calc-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .brief-teams-calc-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--line);
+    font-family: var(--font-display);
+    font-size: clamp(48px, 7vw, 80px);
+    font-weight: 400;
+    color: var(--accent);
+    padding: 8px 0;
+    font-variation-settings: 'opsz' 144;
+    font-feature-settings: 'tnum' 1;
+    transition: border-color 0.2s;
+  }
+  .brief-teams-calc-input:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+  }
+  .brief-teams-calc-input::placeholder {
+    color: var(--line);
+    font-style: italic;
+  }
+  .brief-teams-calc-hint {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 8px;
+  }
+  .brief-teams-calc-arrow {
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: var(--terracotta);
+    font-style: italic;
+  }
+  .brief-teams-calc-right {
+    text-align: left;
+  }
+  .brief-teams-calc-empty {
+    color: var(--muted);
+  }
+  .brief-teams-calc-empty-label {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+  .brief-teams-calc-empty-hint {
+    font-size: 13px;
+  }
+  .brief-teams-calc-result-num {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+    font-variation-settings: 'opsz' 144;
+  }
+  .brief-teams-calc-result-eq {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+    margin: 6px 0 12px;
+  }
+  .brief-teams-calc-result-text {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .brief-teams-calc-result-text strong {
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--accent);
+    font-size: 18px;
+  }
+  .brief-teams-hint {
+    margin-top: 24px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    font-style: italic;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Captains grid on teams slide */
+  .brief-captains-section {
+    margin-top: 32px;
+  }
+  .brief-captains-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .brief-captains-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .brief-captains-hint {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .brief-captains-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .brief-captain-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 14px 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .brief-captain-card.filled {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .brief-captain-card.filled .brief-captain-num { color: var(--gold); }
+  .brief-captain-card.filled .brief-captain-input {
+    color: var(--card);
+    border-bottom-color: rgba(196, 150, 60, 0.4);
+  }
+  .brief-captain-card.filled .brief-captain-input::placeholder {
+    color: rgba(250, 246, 237, 0.5);
+  }
+  .brief-captain-num {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  .brief-captain-num::before { content: 'Équipe '; }
+  .brief-captain-input {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    padding: 4px 0;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--ink);
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .brief-captain-input:focus {
+    outline: none;
+    border-bottom-color: var(--terracotta);
+  }
+  .brief-captain-input::placeholder {
+    font-style: italic;
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 14px;
+  }
+
+  /* Slide 6: Webapp access */
+  .brief-webapp {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 48px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .brief-webapp-qr-block {
+    text-align: center;
+  }
+  .brief-webapp-qr {
+    width: 300px;
+    height: 300px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+  .brief-webapp-qr img { width: 100%; height: 100%; }
+  .brief-webapp-qr-label {
+    font-size: 13px;
+    color: var(--muted);
+    word-break: break-all;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .brief-webapp-roles {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .brief-webapp-role {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+  .brief-webapp-role-letter {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-style: italic;
+    font-variation-settings: 'opsz' 144;
+  }
+  .brief-webapp-role-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+  .brief-webapp-role-desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  /* Slide 3: Les 5 épreuves detailed */
+  .brief-epreuves {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-top: 24px;
+  }
+  .brief-epreuve {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .brief-epreuve:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+    transition: all 0.2s;
+  }
+  .brief-epreuve-letter {
+    font-family: var(--font-display);
+    font-size: 72px;
+    font-variation-settings: 'opsz' 144;
+    font-style: italic;
+    color: var(--terracotta);
+    line-height: 0.85;
+  }
+  .brief-epreuve-name {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .brief-epreuve-desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    flex: 1;
+  }
+  .brief-epreuve-pts {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-style: italic;
+    color: var(--muted);
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* Slide 4: Points system */
+  .brief-points-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 24px;
+  }
+  .brief-points-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px;
+  }
+  .brief-points-card h3 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    letter-spacing: -0.01em;
+  }
+  .brief-points-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .brief-points-row:last-child { border-bottom: none; }
+  .brief-points-label {
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .brief-points-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .brief-points-value em {
+    font-style: italic;
+    color: var(--terracotta);
+  }
+  .brief-points-note {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .brief-points-total {
+    background: var(--accent);
+    color: var(--card);
+    padding: 24px;
+    border-radius: var(--radius);
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .brief-points-total-label {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .brief-points-total-value {
+    font-family: var(--font-display);
+    font-size: 56px;
+    font-variation-settings: 'opsz' 144;
+    font-weight: 400;
+    color: var(--gold);
+  }
+
+  /* Slide 5: Organisation */
+  .brief-org {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 32px;
+  }
+  .brief-org-col {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 32px;
+  }
+  .brief-org-col h3 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--terracotta);
+    margin-bottom: 20px;
+  }
+  .brief-org-item {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: flex-start;
+  }
+  .brief-org-item:last-child { margin-bottom: 0; }
+  .brief-org-num {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1;
+    font-feature-settings: 'tnum' 1;
+  }
+  .brief-org-item-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .brief-org-item-desc {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  /* Slide 6: Go */
+  .brief-go {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .brief-go h1 {
+    font-family: var(--font-display);
+    font-size: clamp(80px, 14vw, 180px);
+    font-variation-settings: 'opsz' 144;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--accent);
+    line-height: 0.9;
+    margin-bottom: 24px;
+    letter-spacing: -0.04em;
+  }
+  .brief-go-sub {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--ink-soft);
+    margin-bottom: 40px;
+    max-width: 700px;
+  }
+  .brief-go-cta {
+    background: var(--accent);
+    color: var(--card);
+    padding: 20px 40px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-lg);
+  }
+  .brief-go-cta:hover {
+    background: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  /* Mode live (ex-screen) — now called "live" */
+  .live-toggle-back {
+    position: fixed;
+    top: 72px;
+    right: 16px;
+    z-index: 50;
+    background: var(--card);
+    border: 1px solid var(--line);
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: all 0.15s;
+    box-shadow: var(--shadow);
+  }
+  .live-toggle-back:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .brief { padding: 24px 20px 100px; }
+    .brief-welcome { grid-template-columns: 1fr; gap: 24px; }
+    .brief-stats { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .brief-stats.brief-stats-3 { grid-template-columns: 1fr; gap: 12px; }
+    .brief-stat-num { font-size: 56px; }
+    .brief-epreuves { grid-template-columns: 1fr; gap: 10px; }
+    .brief-epreuve-letter { font-size: 48px; }
+    .brief-points-grid { grid-template-columns: 1fr; gap: 16px; }
+    .brief-org { grid-template-columns: 1fr; gap: 16px; }
+    .brief-atelier-grid { grid-template-columns: 1fr; gap: 12px; }
+    .brief-atelier-footer { grid-template-columns: 1fr; gap: 12px; padding: 20px; }
+    .brief-teams-calc { grid-template-columns: 1fr; gap: 20px; padding: 24px; }
+    .brief-teams-calc-arrow { transform: rotate(90deg); text-align: center; }
+    .brief-captains-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .brief-webapp { grid-template-columns: 1fr; gap: 24px; }
+    .brief-webapp-qr { width: 220px; height: 220px; margin: 0 auto 12px; }
+  }
+
+  /* ============ GENERIC ============ */
+  .fade-in { animation: fadeIn 0.4s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 900px) {
+    .screen { padding: 24px 20px; }
+    .screen-title-block h1 { font-size: 44px; }
+    .timer-display { font-size: 56px; }
+    .screen-grid { grid-template-columns: 1fr; gap: 20px; }
+    .ateliers-grid { grid-template-columns: 1fr; }
+    .admin-grid { grid-template-columns: 1fr; }
+    .admin-config { grid-template-columns: 1fr; }
+    .screen-footer { flex-direction: column-reverse; text-align: center; }
+  }
+
+  @media (max-width: 500px) {
+    .role-bar button { padding: 5px 9px; font-size: 10px; }
+    .rotation-dot { width: 34px; height: 34px; font-size: 13px; }
+    .admin-rot-buttons { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const EPREUVES = [
+  { key: 'C', name: 'Culture',      maxPts: 2, physical: false },
+  { key: 'A', name: 'Artistique',   maxPts: 2, physical: false },
+  { key: 'P', name: 'Physique',     maxPts: 4, physical: true  },
+  { key: 'E', name: 'Éloquence',    maxPts: 2, physical: false },
+  { key: 'O', name: 'Organisation', maxPts: 2, physical: false },
+];
+const N_TEAMS = 10;
+const N_ROTATIONS = 5;
+const EPREUVE_DURATION = 25 * 60; // 25 min in seconds
+const TRANSITION_DURATION = 5 * 60; // 5 min
+
+// Rotation schedule: teams[rotation][atelierIndex] = [teamIdxA, teamIdxB]
+// Designed so each team visits each atelier exactly once across 5 rotations.
+// Pairs rotate so teams face different opponents.
+function buildSchedule() {
+  // 10 teams, 5 ateliers, 2 teams per atelier, 5 rotations
+  // Round-robin style: teams 0-9, paired (0,5), (1,6), (2,7), (3,8), (4,9) for rotation 1
+  // Then shift ateliers.
+  const schedule = [];
+  const pairings = [
+    [[0,5], [1,6], [2,7], [3,8], [4,9]],
+    [[0,6], [1,7], [2,8], [3,9], [4,5]],
+    [[0,7], [1,8], [2,9], [3,5], [4,6]],
+    [[0,8], [1,9], [2,5], [3,6], [4,7]],
+    [[0,9], [1,5], [2,6], [3,7], [4,8]],
+  ];
+  for (let r = 0; r < N_ROTATIONS; r++) {
+    const rotation = [];
+    for (let a = 0; a < EPREUVES.length; a++) {
+      // Each pair goes to a different atelier; shift by rotation to ensure variety
+      const pairIdx = (a + r) % pairings[r].length;
+      rotation.push(pairings[r][pairIdx]);
+    }
+    schedule.push(rotation);
+  }
+  return schedule;
+}
+const SCHEDULE = buildSchedule();
+
+// ============================================================
+// STATE (persisted via window.storage, shared: true)
+// ============================================================
+const DEFAULT_CONFIG = {
+  teams: Array.from({length: N_TEAMS}, (_, i) => ({
+    id: i,
+    name: `Équipe ${i+1}`,
+    captain: '', // nom de la capitaine (saisi le jour J)
+    code: String(1000 + i * 111).slice(-4) // simple codes: 1000, 1111, ... 2000 etc.
+  })),
+  ateliers: EPREUVES.map(e => ({...e}))
+};
+
+// Computes the display name of a team: "Équipe N · Capitaine" if captain is set.
+function teamDisplayName(team) {
+  if (!team) return '';
+  if (team.captain && team.captain.trim()) {
+    return `${team.name} · ${team.captain.trim()}`;
+  }
+  return team.name;
+}
+
+// Short version for compact UI (buttons, small labels)
+function teamShortName(team) {
+  if (!team) return '';
+  if (team.captain && team.captain.trim()) {
+    return team.captain.trim();
+  }
+  return team.name.replace('Équipe ', 'Éq. ');
+}
+
+// In-memory mirror of persistent state
+let state = {
+  currentRotation: 0,   // 0 = not started, 1-5 = active, 6 = finished
+  phase: 'idle',        // 'idle' | 'epreuve' | 'transition'
+  timerEnd: null,       // epoch ms when current phase ends
+  timerPaused: false,
+  timerRemaining: null, // used when paused
+  scores: {},           // "teamId-atelierKey": { points: number, rotation: number }
+  participantCount: null, // total participants present (for team calc)
+  config: DEFAULT_CONFIG
+};
+
+// ============================================================
+// STORAGE — Supabase (primary) + localStorage (fallback)
+// Strategy: use Supabase Realtime for multi-device sync when
+// credentials are configured, fall back to localStorage polling.
+// Never crash, never show errors — the event must keep running.
+// ============================================================
+const STORAGE_KEY = 'capeo:state'; // localStorage fallback key
+let storageMode = 'local'; // 'supabase' | 'local'
+
+// Initialize Supabase client if credentials are provided via config.js
+const _supabase = (window.CAPEO_SUPABASE_URL && window.CAPEO_SUPABASE_ANON_KEY)
+  ? window.supabase.createClient(window.CAPEO_SUPABASE_URL, window.CAPEO_SUPABASE_ANON_KEY)
+  : null;
+
+async function loadState() {
+  if (_supabase) {
+    try {
+      const { data, error } = await _supabase
+        .from('event_state')
+        .select('data')
+        .eq('id', 1)
+        .maybeSingle();
+      if (!error && data && data.data) {
+        state = { ...state, ...data.data };
+        if (!state.config) state.config = DEFAULT_CONFIG;
+      }
+      storageMode = 'supabase';
+      return;
+    } catch(e) {
+      console.warn('Supabase unavailable, falling back to localStorage', e);
+    }
+  }
+  // localStorage fallback
+  try {
+    const v = localStorage.getItem(STORAGE_KEY);
+    if (v) {
+      const parsed = JSON.parse(v);
+      state = { ...state, ...parsed };
+      if (!state.config) state.config = DEFAULT_CONFIG;
+    }
+  } catch(e) {}
+  storageMode = 'local';
+}
+
+async function saveState() {
+  // Always keep localStorage in sync as backup
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  if (_supabase) {
+    try {
+      await _supabase
+        .from('event_state')
+        .upsert({ id: 1, data: state, updated_at: new Date().toISOString() });
+      storageMode = 'supabase';
+    } catch(e) {
+      storageMode = 'local';
+    }
+  }
+}
+
+// Real-time sync: Supabase Realtime when configured, localStorage polling as fallback
+if (_supabase) {
+  _supabase
+    .channel('capeo-state')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'event_state' }, (payload) => {
+      if (!payload.new || !payload.new.data) return;
+      state = { ...state, ...payload.new.data };
+      if (!state.config) state.config = DEFAULT_CONFIG;
+      const active = document.activeElement;
+      const isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+      if (!isTyping) render();
+    })
+    .subscribe();
+} else {
+  // Fallback: poll localStorage every 3s (single-device mode)
+  let lastStateHash = '';
+  setInterval(() => {
+    try {
+      const v = localStorage.getItem(STORAGE_KEY);
+      if (v && v !== lastStateHash) {
+        lastStateHash = v;
+        const parsed = JSON.parse(v);
+        state = { ...state, ...parsed };
+        if (!state.config) state.config = DEFAULT_CONFIG;
+        const active = document.activeElement;
+        const isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
+        if (!isTyping) render();
+      }
+    } catch(e) {}
+  }, 3000);
+}
+
+// ============================================================
+// ROUTING (hash-based: #/screen, #/cap, #/resp, #/admin)
+// ============================================================
+function getRoute() {
+  const h = window.location.hash.slice(1) || '/';
+  if (h.startsWith('/screen')) return 'screen';
+  if (h.startsWith('/live'))   return 'live';
+  if (h.startsWith('/cap'))    return 'cap';
+  if (h.startsWith('/resp'))   return 'resp';
+  if (h.startsWith('/admin'))  return 'admin';
+  return 'screen';
+}
+window.addEventListener('hashchange', render);
+
+// Local session (which team / atelier chosen on this device)
+const SESSION_KEY_CAP = 'capeo:session:cap';
+const SESSION_KEY_RESP = 'capeo:session:resp';
+function getSessionCap() {
+  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY_CAP) || 'null'); } catch { return null; }
+}
+function setSessionCap(v) {
+  sessionStorage.setItem(SESSION_KEY_CAP, JSON.stringify(v));
+}
+function getSessionResp() {
+  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY_RESP) || 'null'); } catch { return null; }
+}
+function setSessionResp(v) {
+  sessionStorage.setItem(SESSION_KEY_RESP, JSON.stringify(v));
+}
+
+// Note: sessionStorage is forbidden in the artifact guidance, but the app runs
+// hosted (Vercel) where it works fine. For local fallback, use in-memory.
+// If sessionStorage throws, fall back to window memory.
+let _sessCap = null, _sessResp = null;
+try { sessionStorage.getItem('test'); } catch {
+  // override with memory
+  window.getSessionCap = () => _sessCap;
+  window.setSessionCap = (v) => { _sessCap = v; };
+  window.getSessionResp = () => _sessResp;
+  window.setSessionResp = (v) => { _sessResp = v; };
+}
+
+// ============================================================
+// TIMER LOGIC
+// ============================================================
+function getTimerRemaining() {
+  if (state.phase === 'idle') return EPREUVE_DURATION;
+  if (state.timerPaused) return state.timerRemaining || 0;
+  if (!state.timerEnd) return 0;
+  return Math.max(0, Math.floor((state.timerEnd - Date.now()) / 1000));
+}
+
+function formatTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+// Check every second if phase should transition automatically
+setInterval(() => {
+  if (state.phase !== 'idle' && !state.timerPaused && state.timerEnd && Date.now() >= state.timerEnd) {
+    if (state.phase === 'epreuve') {
+      // Switch to transition
+      state.phase = 'transition';
+      state.timerEnd = Date.now() + TRANSITION_DURATION * 1000;
+      saveState();
+    } else if (state.phase === 'transition') {
+      // Advance to next rotation
+      if (state.currentRotation < N_ROTATIONS) {
+        state.currentRotation += 1;
+        state.phase = 'epreuve';
+        state.timerEnd = Date.now() + EPREUVE_DURATION * 1000;
+      } else {
+        state.phase = 'idle';
+        state.timerEnd = null;
+      }
+      saveState();
+    }
+  }
+  // Re-render timer displays
+  const route = getRoute();
+  if (['screen', 'cap', 'admin'].includes(route)) {
+    updateTimerDisplays();
+  }
+}, 1000);
+
+function updateTimerDisplays() {
+  const remaining = getTimerRemaining();
+  document.querySelectorAll('[data-timer]').forEach(el => {
+    el.textContent = formatTime(remaining);
+  });
+}
+
+// ============================================================
+// SCHEDULE HELPERS
+// ============================================================
+function getCurrentAssignments() {
+  // Returns: { atelierKey: [teamId, teamId] } for current rotation
+  if (state.currentRotation < 1 || state.currentRotation > N_ROTATIONS) return {};
+  const rot = SCHEDULE[state.currentRotation - 1];
+  const result = {};
+  EPREUVES.forEach((e, i) => {
+    result[e.key] = rot[i];
+  });
+  return result;
+}
+
+// Returns: [ [teamId, teamId], [teamId, teamId], ... ] — 5 pairs for the given atelier, one per rotation
+function getAtelierScheduleForAllRotations(atelierKey) {
+  const atelierIdx = EPREUVES.findIndex(e => e.key === atelierKey);
+  if (atelierIdx === -1) return [];
+  const pairs = [];
+  for (let r = 0; r < N_ROTATIONS; r++) {
+    pairs.push(SCHEDULE[r][atelierIdx]);
+  }
+  return pairs;
+}
+
+function getTeamAtelierForRotation(teamId, rotationNum) {
+  if (rotationNum < 1 || rotationNum > N_ROTATIONS) return null;
+  const rot = SCHEDULE[rotationNum - 1];
+  for (let i = 0; i < EPREUVES.length; i++) {
+    if (rot[i].includes(teamId)) return EPREUVES[i];
+  }
+  return null;
+}
+
+function getTeamOpponent(teamId, rotationNum) {
+  if (rotationNum < 1 || rotationNum > N_ROTATIONS) return null;
+  const rot = SCHEDULE[rotationNum - 1];
+  for (let i = 0; i < EPREUVES.length; i++) {
+    if (rot[i].includes(teamId)) {
+      return rot[i].find(id => id !== teamId);
+    }
+  }
+  return null;
+}
+
+function getTeamScore(teamId) {
+  let total = 0;
+  for (const e of EPREUVES) {
+    const key = `${teamId}-${e.key}`;
+    if (state.scores[key]) total += state.scores[key].points;
+  }
+  return total;
+}
+
+function getLeaderboard() {
+  return [...state.config.teams]
+    .map(t => ({ ...t, score: getTeamScore(t.id) }))
+    .sort((a, b) => b.score - a.score);
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+const root = document.getElementById('app');
+
+function render() {
+  const route = getRoute();
+  let content = '';
+  if (route === 'screen')      content = renderBriefing();
+  else if (route === 'live')   content = renderLive();
+  else if (route === 'cap')    content = renderCap();
+  else if (route === 'resp')   content = renderResp();
+  else if (route === 'admin')  content = renderAdmin();
+
+  root.innerHTML = renderRoleBar(route) + content;
+  attachEventHandlers(route);
+}
+
+function renderRoleBar(route) {
+  const roles = [
+    { k: 'screen',  label: 'Projection', hash: '#/screen' },
+    { k: 'live',    label: 'Live',    hash: '#/live' },
+    { k: 'cap',     label: 'Capitaine', hash: '#/cap' },
+    { k: 'resp',    label: 'Responsable', hash: '#/resp' },
+    { k: 'admin',   label: 'Admin',   hash: '#/admin' },
+  ];
+  return `
+    <div class="role-bar">
+      ${roles.map(r => `
+        <button class="${route === r.k ? 'active' : ''}" onclick="location.hash='${r.hash}'">
+          ${r.label}
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ============================================================
+// ============================================================
+// PROJECTION SCREEN
+// ============================================================
+function renderTeamsCalcResult(count) {
+  if (!count || count < 10) {
+    return `
+      <div class="brief-teams-calc-empty">
+        <div class="brief-teams-calc-empty-label">En attente</div>
+        <div class="brief-teams-calc-empty-hint">Saisissez le nombre pour voir la répartition</div>
+      </div>
+    `;
+  }
+  const perTeam = Math.floor(count / 10);
+  const remainder = count % 10;
+  // remainder teams get (perTeam + 1), rest get perTeam
+  let repartitionText;
+  if (remainder === 0) {
+    repartitionText = `<strong>${perTeam}</strong> participantes par équipe`;
+  } else {
+    repartitionText = `${remainder} équipe${remainder > 1 ? 's' : ''} de <strong>${perTeam + 1}</strong>, ${10 - remainder} équipe${(10 - remainder) > 1 ? 's' : ''} de <strong>${perTeam}</strong>`;
+  }
+  return `
+    <div class="brief-teams-calc-result-num">${count}</div>
+    <div class="brief-teams-calc-result-eq">÷ 10 équipes</div>
+    <div class="brief-teams-calc-result-text">${repartitionText}</div>
+  `;
+}
+
+// ============================================================
+// BRIEFING CAROUSEL (projection d'accueil, avant le lancement)
+// ============================================================
+let briefingSlide = 0;
+const BRIEFING_SLIDES = ['welcome', 'concept', 'epreuves', 'atelier', 'teams', 'webapp', 'go'];
+
+function renderBriefing() {
+  const slideKey = BRIEFING_SLIDES[briefingSlide];
+  const slideContent = renderBriefingSlide(slideKey);
+  const isFirst = briefingSlide === 0;
+  const isLast = briefingSlide === BRIEFING_SLIDES.length - 1;
+
+  return `
+    <div class="brief fade-in">
+      ${slideContent}
+      <div class="brief-nav">
+        <button class="brief-nav-btn" data-brief-action="prev" ${isFirst ? 'disabled' : ''} aria-label="Précédent">‹</button>
+        <div class="brief-nav-dots">
+          ${BRIEFING_SLIDES.map((_, i) => `
+            <button class="brief-nav-dot ${i === briefingSlide ? 'active' : ''}" data-brief-go="${i}" aria-label="Slide ${i+1}"></button>
+          `).join('')}
+        </div>
+        <button class="brief-nav-btn" data-brief-action="next" ${isLast ? 'disabled' : ''} aria-label="Suivant">›</button>
+        <button class="brief-nav-live" data-brief-action="live">Passer en direct →</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderBriefingSlide(key) {
+  const currentUrl = window.location.origin + window.location.pathname;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&data=${encodeURIComponent(currentUrl)}`;
+
+  if (key === 'welcome') {
+    return `
+      <div class="brief-slide">
+        <div class="brief-welcome-centered">
+          <div class="landing-ornament" style="margin-bottom: 40px"></div>
+          <div class="brief-kicker" style="margin-bottom: 24px">Challenge intergénérationnel</div>
+          <h1 class="brief-welcome-title">Bienvenue au<br/><em>Challenge CAPEO</em></h1>
+          <p class="brief-welcome-sub">
+            Un moment pour se rencontrer, se dépasser et célébrer ensemble.
+          </p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (key === 'concept') {
+    return `
+      <div class="brief-slide">
+        <div class="brief-kicker">Le concept</div>
+        <h1 class="brief-title">Un parcours <em>en cinq temps</em></h1>
+        <p class="brief-lead">
+          Chaque équipe traverse les cinq ateliers en cinq rotations successives.
+          Aucun doublon, aucun temps mort — une expérience équitable pour toutes.
+        </p>
+        <div class="brief-stats brief-stats-3">
+          <div class="brief-stat">
+            <div class="brief-stat-num">10</div>
+            <div class="brief-stat-label">Équipes intergénérationnelles</div>
+          </div>
+          <div class="brief-stat">
+            <div class="brief-stat-num">5</div>
+            <div class="brief-stat-label">Épreuves</div>
+          </div>
+          <div class="brief-stat">
+            <div class="brief-stat-num"><em>2h30</em></div>
+            <div class="brief-stat-label">De challenge</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (key === 'epreuves') {
+    const epreuveDescs = {
+      'C': 'Quiz en équipes. Culture islamique, réactivité et mémoire collective.',
+      'A': 'Création artistique collective autour d\'un message à transmettre.',
+      'P': 'Défi sportif en deux temps : football puis volley. Énergie et coopération.',
+      'E': 'Rédaction et transmission d\'un message aux générations futures.',
+      'O': 'Mission terrain sous contraintes de budget et de temps.'
+    };
+    const epreuvePts = {
+      'C': '/ 2 points', 'A': '/ 2 points', 'P': '/ 4 points (2 + 2)', 'E': '/ 2 points', 'O': '/ 2 points'
+    };
+    return `
+      <div class="brief-slide">
+        <div class="brief-kicker">Les cinq épreuves · c·a·p·e·o</div>
+        <h1 class="brief-title">Cinq <em>intelligences</em></h1>
+        <p class="brief-lead">
+          Chaque épreuve sollicite une dimension différente — intellectuelle,
+          créative, physique, oratoire, pratique.
+        </p>
+        <div class="brief-epreuves">
+          ${EPREUVES.map(e => `
+            <div class="brief-epreuve">
+              <div class="brief-epreuve-letter">${e.key}</div>
+              <div class="brief-epreuve-name">${e.name}</div>
+              <div class="brief-epreuve-desc">${epreuveDescs[e.key]}</div>
+              <div class="brief-epreuve-pts">${epreuvePts[e.key]}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (key === 'atelier') {
+    return `
+      <div class="brief-slide">
+        <div class="brief-kicker">Comment fonctionne un atelier</div>
+        <h1 class="brief-title">Deux équipes, <em>vingt-cinq minutes</em></h1>
+        <p class="brief-lead">
+          Chaque atelier accueille deux équipes qui s'y affrontent. À la fin de
+          l'épreuve, la responsable attribue les points à chaque équipe.
+        </p>
+        <div class="brief-atelier-grid">
+          <div class="brief-atelier-step">
+            <div class="brief-atelier-step-num">1</div>
+            <div class="brief-atelier-step-title">Les deux équipes arrivent</div>
+            <div class="brief-atelier-step-desc">
+              Chaque rotation amène deux équipes dans le même atelier. Elles se mesurent l'une à l'autre.
+            </div>
+          </div>
+          <div class="brief-atelier-step">
+            <div class="brief-atelier-step-num">2</div>
+            <div class="brief-atelier-step-title">25 minutes d'épreuve</div>
+            <div class="brief-atelier-step-desc">
+              La responsable encadre, observe, évalue. Puis 5 minutes de transition pour changer d'atelier.
+            </div>
+          </div>
+          <div class="brief-atelier-step">
+            <div class="brief-atelier-step-num">3</div>
+            <div class="brief-atelier-step-title">Les points sont saisis</div>
+            <div class="brief-atelier-step-desc">
+              Victoire <strong style="color:var(--accent)">2 points</strong> · Égalité <strong style="color:var(--gold)">1 point</strong> · Défaite <strong style="color:var(--muted)">0 point</strong>.
+            </div>
+          </div>
+        </div>
+        <div class="brief-atelier-footer">
+          <div class="brief-atelier-footer-item">
+            <div class="brief-atelier-footer-label">Score max par épreuve</div>
+            <div class="brief-atelier-footer-value">2</div>
+          </div>
+          <div class="brief-atelier-footer-item">
+            <div class="brief-atelier-footer-label">Sauf Physique (foot + volley)</div>
+            <div class="brief-atelier-footer-value"><em>4</em></div>
+          </div>
+          <div class="brief-atelier-footer-item">
+            <div class="brief-atelier-footer-label">Score total possible</div>
+            <div class="brief-atelier-footer-value">12</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (key === 'teams') {
+    return `
+      <div class="brief-slide">
+        <div class="brief-kicker">Constitution des équipes</div>
+        <h1 class="brief-title">Dix équipes, <em>à parts égales</em></h1>
+        <p class="brief-lead">
+          Répartissez les participantes en dix équipes intergénérationnelles à parts égales.
+          Chaque équipe désigne sa capitaine — saisissez son prénom ci-dessous pour l'identifier.
+        </p>
+
+        <div class="brief-teams-calc">
+          <div class="brief-teams-calc-left">
+            <div class="brief-teams-calc-label">Nombre de participantes présentes</div>
+            <input
+              type="number"
+              id="teams-calc-input"
+              class="brief-teams-calc-input"
+              min="10"
+              max="500"
+              placeholder="—"
+              value="${state.participantCount || ''}"
+            />
+            <div class="brief-teams-calc-hint">Entrez le nombre exact ce matin</div>
+          </div>
+          <div class="brief-teams-calc-arrow">→</div>
+          <div class="brief-teams-calc-right" id="teams-calc-result">
+            ${renderTeamsCalcResult(state.participantCount)}
+          </div>
+        </div>
+
+        <div class="brief-captains-section">
+          <div class="brief-captains-header">
+            <div class="brief-captains-title">Noms des capitaines</div>
+            <div class="brief-captains-hint">À mesure que les équipes se forment, saisissez le prénom de chaque capitaine</div>
+          </div>
+          <div class="brief-captains-grid">
+            ${state.config.teams.map((t, i) => `
+              <div class="brief-captain-card ${t.captain ? 'filled' : ''}">
+                <div class="brief-captain-num">${i + 1}</div>
+                <input
+                  type="text"
+                  class="brief-captain-input"
+                  data-captain-idx="${i}"
+                  value="${escapeAttr(t.captain || '')}"
+                  placeholder="Prénom de la capitaine"
+                  autocomplete="off"
+                />
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (key === 'webapp') {
+    return `
+      <div class="brief-slide">
+        <div class="brief-kicker">Accès à l'application</div>
+        <h1 class="brief-title">Scannez pour <em>rejoindre</em></h1>
+        <div class="brief-webapp">
+          <div class="brief-webapp-qr-block">
+            <div class="brief-webapp-qr">
+              <img src="${qrUrl}" alt="QR Code" />
+            </div>
+            <div class="brief-webapp-qr-label">${currentUrl}</div>
+          </div>
+          <div class="brief-webapp-roles">
+            <div class="brief-webapp-role">
+              <div class="brief-webapp-role-letter">C</div>
+              <div class="brief-webapp-role-content">
+                <div class="brief-webapp-role-title">Capitaines d'équipe</div>
+                <div class="brief-webapp-role-desc">
+                  Sélectionnez votre équipe, entrez votre code et suivez en direct votre atelier
+                  actuel, le prochain, et les points reçus.
+                </div>
+              </div>
+            </div>
+            <div class="brief-webapp-role">
+              <div class="brief-webapp-role-letter">R</div>
+              <div class="brief-webapp-role-content">
+                <div class="brief-webapp-role-title">Responsables d'ateliers</div>
+                <div class="brief-webapp-role-desc">
+                  Sélectionnez votre atelier avec le code organisatrice, puis saisissez les
+                  résultats à la fin de chaque rotation.
+                </div>
+              </div>
+            </div>
+            <div class="brief-webapp-role">
+              <div class="brief-webapp-role-letter">P</div>
+              <div class="brief-webapp-role-content">
+                <div class="brief-webapp-role-title">Participantes</div>
+                <div class="brief-webapp-role-desc">
+                  Visualisez le classement en direct sur l'écran projeté et encouragez
+                  votre équipe.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (key === 'go') {
+    return `
+      <div class="brief-slide">
+        <div class="brief-go">
+          <div class="brief-kicker">Que le meilleur gagne</div>
+          <h1>C'est parti</h1>
+          <p class="brief-go-sub">
+            Les capitaines rejoignent leur équipe. Les responsables rejoignent
+            leur atelier. L'aventure commence maintenant.
+          </p>
+          <button class="brief-go-cta" data-brief-action="live">Passer à l'affichage live →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  return '';
+}
+
+// ============================================================
+// LIVE DASHBOARD (ex-screen : à utiliser pendant les rotations)
+// ============================================================
+function renderLive() {
+  const remaining = getTimerRemaining();
+  const assignments = getCurrentAssignments();
+  const leaderboard = getLeaderboard();
+  const phaseLabel = state.phase === 'idle' ? 'En attente' :
+                     state.phase === 'epreuve' ? 'Épreuve en cours' : 'Transition';
+  const phaseClass = state.phase === 'epreuve' ? 'active-epreuve' :
+                     state.phase === 'transition' ? 'active-transition' : '';
+
+  const currentUrl = window.location.origin + window.location.pathname;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=${encodeURIComponent(currentUrl)}`;
+
+  const rotationDots = [];
+  for (let i = 1; i <= N_ROTATIONS; i++) {
+    const cls = i < state.currentRotation ? 'done' :
+                i === state.currentRotation ? 'current' : '';
+    rotationDots.push(`<div class="rotation-dot ${cls}">${i}</div>`);
+    if (i < N_ROTATIONS) rotationDots.push(`<div class="rotation-line"></div>`);
+  }
+
+  return `
+    <button class="live-toggle-back" onclick="location.hash='#/screen'">← Retour au briefing</button>
+    <div class="screen fade-in">
+      <div class="screen-header">
+        <div class="screen-title-block">
+          <div class="kicker">Rotation ${state.currentRotation || '—'} sur ${N_ROTATIONS}</div>
+          <h1>Le <em>Challenge</em></h1>
+        </div>
+        <div class="timer-block">
+          <div class="timer-phase ${phaseClass}">${phaseLabel}</div>
+          <div class="timer-display ${state.timerPaused ? 'paused' : ''}" data-timer>${formatTime(remaining)}</div>
+        </div>
+      </div>
+
+      <div class="rotation-indicator">${rotationDots.join('')}</div>
+
+      <div class="screen-grid">
+        <div>
+          <div class="section-label">Ateliers en cours</div>
+          <div class="ateliers-grid">
+            ${EPREUVES.map(e => {
+              const teamIds = assignments[e.key] || [];
+              const names = teamIds.map(id => teamDisplayName(state.config.teams[id])).join(' vs ');
+              return `
+                <div class="atelier-card ${teamIds.length ? 'highlight' : ''}">
+                  <div class="atelier-header">
+                    <div class="atelier-letter">${e.key}</div>
+                    <div class="atelier-name">${e.name}</div>
+                  </div>
+                  <div class="atelier-teams-label">Équipes</div>
+                  <div class="${teamIds.length ? 'atelier-teams' : 'atelier-teams-empty'}">
+                    ${teamIds.length ? names : 'En attente'}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <div>
+          <div class="section-label">Classement</div>
+          <div class="leaderboard">
+            <div class="leaderboard-list">
+              ${leaderboard.map((t, i) => `
+                <div class="leaderboard-row ${i < 3 ? 'top-' + (i+1) : ''}">
+                  <div class="leaderboard-rank">${i+1}</div>
+                  <div class="leaderboard-name">${escapeHtml(teamDisplayName(t))}</div>
+                  <div class="leaderboard-score">${t.score}<span class="leaderboard-score-max">/12</span></div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="screen-footer">
+        <div class="screen-footer-text">
+          <div class="kicker">Scannez pour rejoindre</div>
+          <div class="url">${currentUrl}</div>
+        </div>
+        <div class="qr-box">
+          <img src="${qrUrl}" alt="QR Code" />
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// CAPITAINE
+// ============================================================
+function renderCap() {
+  const session = (window.getSessionCap || getSessionCap)();
+
+  if (!session) return renderCapLogin();
+
+  const team = state.config.teams[session.teamId];
+  const currentAtelier = getTeamAtelierForRotation(session.teamId, state.currentRotation);
+  const nextAtelier = getTeamAtelierForRotation(session.teamId, state.currentRotation + 1);
+  const remaining = getTimerRemaining();
+  const total = getTeamScore(session.teamId);
+
+  return `
+    <div class="mobile-view fade-in">
+      <div class="mobile-header">
+        <div class="kicker">Capitaine</div>
+        <h1>${escapeHtml(teamDisplayName(team))}</h1>
+      </div>
+
+      ${currentAtelier ? `
+        <div class="cap-status">
+          <div class="kicker">Atelier en cours · Rotation ${state.currentRotation}</div>
+          <div class="cap-status-letter">${currentAtelier.key}</div>
+          <div class="cap-status-name">${currentAtelier.name}</div>
+          <div class="cap-status-timer">
+            <div class="cap-status-timer-label">${state.phase === 'transition' ? 'Transition' : state.phase === 'epreuve' ? 'Temps restant' : 'En attente'}</div>
+            <div class="cap-status-timer-value" data-timer>${formatTime(remaining)}</div>
+          </div>
+        </div>
+      ` : `
+        <div class="cap-status">
+          <div class="kicker">Statut</div>
+          <div class="cap-status-name" style="margin-top: 16px;">
+            ${state.currentRotation === 0 ? "Le challenge n'a pas encore commencé" :
+              state.currentRotation > N_ROTATIONS ? "Challenge terminé" :
+              "En attente de la prochaine rotation"}
+          </div>
+        </div>
+      `}
+
+      <div class="cap-next">
+        <div class="kicker">Prochain atelier</div>
+        ${nextAtelier ? `
+          <div class="cap-next-content">
+            <div class="cap-next-letter">${nextAtelier.key}</div>
+            <div class="cap-next-name">${nextAtelier.name}</div>
+          </div>
+        ` : `
+          <div class="cap-next-empty">${state.currentRotation >= N_ROTATIONS ? "Aucun — c'est le dernier" : "À venir"}</div>
+        `}
+      </div>
+
+      <div class="cap-scores">
+        <div class="kicker">Vos scores</div>
+        <div class="cap-scores-list">
+          ${EPREUVES.map(e => {
+            const key = `${session.teamId}-${e.key}`;
+            const entry = state.scores[key];
+            return `
+              <div class="cap-score-row">
+                <div class="cap-score-letter">${e.key}</div>
+                <div class="cap-score-name">${e.name}</div>
+                <div>
+                  ${entry ?
+                    `<span class="cap-score-value">${entry.points}<span style="font-size:13px;color:var(--muted);font-weight:400"> /${e.maxPts}</span></span>` :
+                    `<span class="cap-score-pending">—</span>`
+                  }
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div class="cap-total">
+          <div class="cap-total-label">Total</div>
+          <div class="cap-total-value">${total}<span style="font-size:18px;color:var(--muted);"> / 12</span></div>
+        </div>
+      </div>
+
+      <button class="admin-btn" style="margin-top:20px;width:100%" data-action="cap-logout">Changer d'équipe</button>
+    </div>
+  `;
+}
+
+function renderCapLogin() {
+  return `
+    <div class="mobile-view fade-in">
+      <div class="mobile-header">
+        <div class="kicker">Connexion capitaine</div>
+        <h1>Rejoindre<br><em>votre équipe</em></h1>
+      </div>
+      <div class="login-card">
+        <label class="form-label">Équipe</label>
+        <select id="cap-team-select">
+          <option value="">— Sélectionnez votre équipe —</option>
+          ${state.config.teams.map(t => `<option value="${t.id}">${escapeHtml(teamDisplayName(t))}</option>`).join('')}
+        </select>
+        <label class="form-label">Code d'accès</label>
+        <input type="text" id="cap-code-input" inputmode="numeric" pattern="[0-9]*" placeholder="4 chiffres" maxlength="4" />
+        <div class="error-msg" id="cap-error" style="display:none"></div>
+        <button class="submit-btn" data-action="cap-login">Se connecter</button>
+      </div>
+      <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--muted);">
+        Le code vous est communiqué par l'organisatrice.
+      </p>
+    </div>
+  `;
+}
+
+// ============================================================
+// RESPONSABLE D'ATELIER
+// ============================================================
+function renderResp() {
+  const session = (window.getSessionResp || getSessionResp)();
+  if (!session) return renderRespLogin();
+
+  const atelier = EPREUVES.find(e => e.key === session.atelierKey);
+  const allRotations = getAtelierScheduleForAllRotations(atelier.key);
+  const currentRotation = state.currentRotation;
+
+  // Which row is expanded? Tracked in a local UI state var.
+  if (typeof window._respExpanded === 'undefined') {
+    // On first load, default to current rotation (if in range) else rotation 1
+    window._respExpanded = (currentRotation >= 1 && currentRotation <= N_ROTATIONS)
+      ? currentRotation : 1;
+  }
+  const expanded = window._respExpanded;
+
+  return `
+    <div class="mobile-view fade-in">
+      <div class="mobile-header">
+        <div class="kicker">Responsable d'atelier</div>
+        <h1>Saisie<br><em>des points</em></h1>
+      </div>
+
+      <div class="resp-card">
+        <div class="resp-atelier-display">
+          <div class="resp-atelier-letter">${atelier.key}</div>
+          <div class="resp-atelier-info">
+            <div class="kicker">Atelier</div>
+            <div class="resp-atelier-name">${atelier.name}</div>
+          </div>
+        </div>
+
+        <div class="resp-free-hint">
+          Vous pouvez saisir les points pour n'importe quelle rotation, à tout moment. Tapez sur une ligne pour la développer.
+        </div>
+
+        <div class="resp-rotations">
+          ${allRotations.map((teamIds, rIdx) => {
+            const rotationNum = rIdx + 1;
+            const isCurrent = rotationNum === currentRotation;
+            const isExpanded = rotationNum === expanded;
+            return renderRespRotationRow(atelier, teamIds, rotationNum, isCurrent, isExpanded);
+          }).join('')}
+        </div>
+      </div>
+
+      <button class="admin-btn" style="margin-top:20px;width:100%" data-action="resp-logout">Changer d'atelier</button>
+    </div>
+  `;
+}
+
+function renderRespRotationRow(atelier, teamIds, rotationNum, isCurrent, isExpanded) {
+  const teamA = state.config.teams[teamIds[0]];
+  const teamB = state.config.teams[teamIds[1]];
+
+  // Determine status
+  let status = 'pending'; // pending | done
+  let scoreSummary = '';
+  if (atelier.physical) {
+    const phys = state.scoresPhysical || {};
+    const keyA = `${teamIds[0]}-${rotationNum}`;
+    const keyB = `${teamIds[1]}-${rotationNum}`;
+    const pA = phys[keyA];
+    const pB = phys[keyB];
+    if (pA && pB && pA.foot !== null && pA.foot !== undefined &&
+        pA.volley !== null && pA.volley !== undefined) {
+      status = 'done';
+      const totalA = (pA.foot ?? 0) + (pA.volley ?? 0);
+      const totalB = (pB.foot ?? 0) + (pB.volley ?? 0);
+      scoreSummary = `${totalA} · ${totalB}`;
+    }
+  } else {
+    const sA = state.scores[`${teamIds[0]}-${atelier.key}`];
+    const sB = state.scores[`${teamIds[1]}-${atelier.key}`];
+    if (sA && sB && sA.rotation === rotationNum) {
+      status = 'done';
+      scoreSummary = `${sA.points} · ${sB.points}`;
+    }
+  }
+
+  const rowClass = [
+    'resp-rotation-row',
+    isCurrent ? 'current' : '',
+    isExpanded ? 'expanded' : '',
+    status === 'done' ? 'done' : ''
+  ].filter(Boolean).join(' ');
+
+  return `
+    <div class="${rowClass}">
+      <button class="resp-rotation-head" data-resp-toggle="${rotationNum}">
+        <div class="resp-rotation-num">
+          <span class="resp-rotation-num-label">Rotation</span>
+          <span class="resp-rotation-num-value">${rotationNum}</span>
+        </div>
+        <div class="resp-rotation-teams">
+          <div class="resp-rotation-team-a">${escapeHtml(teamDisplayName(teamA))}</div>
+          <div class="resp-rotation-vs">vs</div>
+          <div class="resp-rotation-team-b">${escapeHtml(teamDisplayName(teamB))}</div>
+        </div>
+        <div class="resp-rotation-status">
+          ${isCurrent ? '<span class="resp-rotation-badge-live">En cours</span>' : ''}
+          ${status === 'done' ?
+            `<span class="resp-rotation-score">${scoreSummary}</span>` :
+            `<span class="resp-rotation-pending">À saisir</span>`
+          }
+          <span class="resp-rotation-chevron">${isExpanded ? '▲' : '▼'}</span>
+        </div>
+      </button>
+      ${isExpanded ? `
+        <div class="resp-rotation-body">
+          ${atelier.physical
+            ? renderRespPhysicalInputs(teamIds, rotationNum)
+            : renderRespStandardInputs(teamIds, atelier, rotationNum)}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderRespStandardInputs(teamIds, atelier, rotationNum) {
+  const teamA = state.config.teams[teamIds[0]];
+  const teamB = state.config.teams[teamIds[1]];
+  const entryA = state.scores[`${teamIds[0]}-${atelier.key}`];
+  const currentOutcome = entryA?.rotation === rotationNum ?
+    (entryA.points === 2 ? 'A' : entryA.points === 1 ? 'tie' : 'B') : null;
+
+  const submitted = currentOutcome !== null;
+
+  return `
+    <div class="resp-sub-label" style="margin-top:4px">Résultat</div>
+    <div class="resp-outcome-selector">
+      <button class="resp-outcome-btn ${currentOutcome === 'A' ? 'win' : ''}"
+              data-outcome="A" data-rotation="${rotationNum}">
+        ${escapeHtml(teamShortName(teamA))} gagne
+      </button>
+      <button class="resp-outcome-btn ${currentOutcome === 'tie' ? 'tie' : ''}"
+              data-outcome="tie" data-rotation="${rotationNum}">
+        Égalité
+      </button>
+      <button class="resp-outcome-btn ${currentOutcome === 'B' ? 'win' : ''}"
+              data-outcome="B" data-rotation="${rotationNum}">
+        ${escapeHtml(teamShortName(teamB))} gagne
+      </button>
+    </div>
+    ${submitted ? `<div class="resp-submitted">Points enregistrés — modifiable à tout moment</div>` : ''}
+  `;
+}
+
+function renderRespPhysicalInputs(teamIds, rotationNum) {
+  const teamA = state.config.teams[teamIds[0]];
+  const teamB = state.config.teams[teamIds[1]];
+  // Storage: state.scoresPhysical keyed by "teamId-rotationNum" -> { foot, volley }
+  const phys = state.scoresPhysical || {};
+  const keyA = `${teamIds[0]}-${rotationNum}`;
+  const keyB = `${teamIds[1]}-${rotationNum}`;
+  const physA = phys[keyA] || { foot: null, volley: null };
+  const physB = phys[keyB] || { foot: null, volley: null };
+
+  function outcomeLetter(a, b, letter) {
+    if (a === null || a === undefined || b === null || b === undefined) return null;
+    if (a === 2 && b === 0) return letter === 'A' ? 'win' : null;
+    if (a === 0 && b === 2) return letter === 'B' ? 'win' : null;
+    if (a === 1 && b === 1) return letter === 'tie' ? 'tie' : null;
+    return null;
+  }
+  const footA = physA.foot, footB = physB.foot;
+  const volA = physA.volley, volB = physB.volley;
+  const isDone = (footA !== null && volA !== null);
+
+  return `
+    <div class="resp-physical-notice">
+      Épreuve double : football + volley. Chaque match se note séparément.
+    </div>
+
+    <div class="resp-sub-section">
+      <div class="resp-sub-label">Football</div>
+      <div class="resp-outcome-selector">
+        <button class="resp-outcome-btn ${outcomeLetter(footA, footB, 'A') ? 'win' : ''}"
+                data-phys="foot" data-phys-outcome="A" data-rotation="${rotationNum}">
+          ${escapeHtml(teamShortName(teamA))}
+        </button>
+        <button class="resp-outcome-btn ${outcomeLetter(footA, footB, 'tie') ? 'tie' : ''}"
+                data-phys="foot" data-phys-outcome="tie" data-rotation="${rotationNum}">
+          Égalité
+        </button>
+        <button class="resp-outcome-btn ${outcomeLetter(footA, footB, 'B') ? 'win' : ''}"
+                data-phys="foot" data-phys-outcome="B" data-rotation="${rotationNum}">
+          ${escapeHtml(teamShortName(teamB))}
+        </button>
+      </div>
+    </div>
+
+    <div class="resp-sub-section">
+      <div class="resp-sub-label">Volley</div>
+      <div class="resp-outcome-selector">
+        <button class="resp-outcome-btn ${outcomeLetter(volA, volB, 'A') ? 'win' : ''}"
+                data-phys="volley" data-phys-outcome="A" data-rotation="${rotationNum}">
+          ${escapeHtml(teamShortName(teamA))}
+        </button>
+        <button class="resp-outcome-btn ${outcomeLetter(volA, volB, 'tie') ? 'tie' : ''}"
+                data-phys="volley" data-phys-outcome="tie" data-rotation="${rotationNum}">
+          Égalité
+        </button>
+        <button class="resp-outcome-btn ${outcomeLetter(volA, volB, 'B') ? 'win' : ''}"
+                data-phys="volley" data-phys-outcome="B" data-rotation="${rotationNum}">
+          ${escapeHtml(teamShortName(teamB))}
+        </button>
+      </div>
+    </div>
+
+    ${isDone ? `<div class="resp-submitted">Points enregistrés — modifiable à tout moment</div>` : ''}
+  `;
+}
+
+function renderRespLogin() {
+  return `
+    <div class="mobile-view fade-in">
+      <div class="mobile-header">
+        <div class="kicker">Responsable d'atelier</div>
+        <h1>Sélection<br><em>de l'atelier</em></h1>
+      </div>
+      <div class="login-card">
+        <label class="form-label">Atelier</label>
+        <select id="resp-atelier-select">
+          <option value="">— Sélectionnez votre atelier —</option>
+          ${EPREUVES.map(e => `<option value="${e.key}">${e.key} · ${e.name}</option>`).join('')}
+        </select>
+        <label class="form-label">Code organisatrice</label>
+        <input type="password" id="resp-code-input" placeholder="Code fourni par l'organisatrice" />
+        <div class="error-msg" id="resp-error" style="display:none"></div>
+        <button class="submit-btn" data-action="resp-login">Accéder à l'atelier</button>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+function renderAdmin() {
+  const remaining = getTimerRemaining();
+  const leaderboard = getLeaderboard();
+  const phaseLabel = state.phase === 'idle' ? 'En attente' :
+                     state.phase === 'epreuve' ? 'Épreuve' : 'Transition';
+
+  return `
+    <div class="admin-view fade-in">
+      <div class="admin-header">
+        <h1>Console <em>organisatrice</em></h1>
+        <div style="text-align:right">
+          <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)">Rotation</div>
+          <div style="font-family:var(--font-display);font-size:32px;font-weight:500;color:var(--accent)">${state.currentRotation}/${N_ROTATIONS}</div>
+          <div style="margin-top:6px;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:${storageMode === 'supabase' ? 'var(--accent-soft)' : 'var(--terracotta)'}">
+            ${storageMode === 'supabase' ? '● Sync Supabase' : '● Mode local uniquement'}
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-controls">
+        ${state.phase === 'idle' && state.currentRotation === 0 ? `
+          <button class="admin-btn primary" data-action="start">▶ Lancer la rotation 1</button>
+        ` : state.phase === 'idle' && state.currentRotation > N_ROTATIONS ? `
+          <button class="admin-btn" data-action="reset-challenge">Réinitialiser le challenge</button>
+        ` : state.phase === 'idle' ? `
+          <button class="admin-btn primary" data-action="start">▶ Lancer rotation ${state.currentRotation + 1}</button>
+        ` : ''}
+
+        ${state.phase !== 'idle' ? `
+          ${state.timerPaused ?
+            `<button class="admin-btn primary" data-action="resume">▶ Reprendre</button>` :
+            `<button class="admin-btn" data-action="pause">⏸ Pause</button>`
+          }
+          <button class="admin-btn" data-action="skip-phase">
+            Passer à ${state.phase === 'epreuve' ? 'la transition' : 'la rotation suivante'}
+          </button>
+        ` : ''}
+
+        <button class="admin-btn" data-action="goto-screen">Ouvrir le live</button>
+        <button class="admin-btn danger" data-action="reset-all">Tout réinitialiser</button>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-section">
+          <h2>Minuteur</h2>
+          <div class="admin-timer">
+            <div class="admin-timer-value" data-timer>${formatTime(remaining)}</div>
+            <div class="admin-timer-label">${phaseLabel}${state.timerPaused ? ' · en pause' : ''}</div>
+          </div>
+          <div class="admin-state-info">
+            <div class="admin-state-row">
+              <div class="admin-state-label">Durée épreuve</div>
+              <div class="admin-state-value">25:00</div>
+            </div>
+            <div class="admin-state-row">
+              <div class="admin-state-label">Durée transition</div>
+              <div class="admin-state-value">5:00</div>
+            </div>
+          </div>
+          <div style="margin-top:16px">
+            <div class="admin-state-label" style="margin-bottom:8px">Aller directement à la rotation…</div>
+            <div class="admin-rot-buttons">
+              ${Array.from({length: N_ROTATIONS}, (_, i) => i + 1).map(r => `
+                <button class="admin-rot-btn ${r === state.currentRotation ? 'current' : ''}"
+                        data-action="goto-rot" data-rot="${r}">${r}</button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h2>Classement live</h2>
+          <table class="admin-scores-table">
+            <thead>
+              <tr>
+                <th>Équipe</th>
+                ${EPREUVES.map(e => `<th style="text-align:center">${e.key}</th>`).join('')}
+                <th style="text-align:right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${leaderboard.map(t => `
+                <tr>
+                  <td class="name">${escapeHtml(teamDisplayName(t))}</td>
+                  ${EPREUVES.map(e => {
+                    const s = state.scores[`${t.id}-${e.key}`];
+                    return s ? `<td class="letter">${s.points}</td>` : `<td class="empty">·</td>`;
+                  }).join('')}
+                  <td class="total" style="text-align:right">${t.score}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="admin-section" style="margin-top:24px">
+        <h2>Configuration</h2>
+        <div class="setup-hint">
+          Les codes d'accès capitaines s'affichent ci-dessous. Communiquez-les individuellement
+          à chaque capitaine avant le lancement. Code organisatrice (pour les responsables d'ateliers) :
+          <strong style="color:var(--accent)">CAPEO2026</strong>
+        </div>
+
+        <div class="admin-config">
+          <div class="admin-config-col">
+            <h3>Noms des équipes &amp; codes</h3>
+            ${state.config.teams.map((t, i) => `
+              <div class="admin-config-row">
+                <span class="prefix">${i+1}</span>
+                <input class="admin-config-input" type="text" value="${escapeAttr(t.name)}"
+                       data-config="team-name" data-idx="${i}" />
+                <input class="admin-config-input" type="text" value="${escapeAttr(t.code)}" maxlength="4"
+                       style="width:60px;flex:none;text-align:center;font-family:var(--font-display);font-weight:500"
+                       data-config="team-code" data-idx="${i}" />
+              </div>
+            `).join('')}
+          </div>
+          <div class="admin-config-col">
+            <h3>Ateliers</h3>
+            ${EPREUVES.map((e, i) => `
+              <div class="admin-config-row">
+                <span class="prefix">${e.key}</span>
+                <input class="admin-config-input" type="text" value="${escapeAttr(e.name)}" disabled
+                       title="Le nom des épreuves est fixé par la structure CAPEO" />
+              </div>
+            `).join('')}
+            <h3 style="margin-top:24px">Planning des rotations</h3>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+              Chaque équipe passe une fois dans chaque atelier. Affectations fixes :
+            </div>
+            <table style="width:100%;font-size:12px;border-collapse:collapse">
+              <thead>
+                <tr style="border-bottom:1px solid var(--line)">
+                  <th style="text-align:left;padding:6px 4px;font-weight:500;color:var(--muted)">Rot.</th>
+                  ${EPREUVES.map(e => `<th style="padding:6px 4px;color:var(--muted);font-weight:500">${e.key}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${SCHEDULE.map((rot, r) => `
+                  <tr style="border-bottom:1px solid var(--line)">
+                    <td style="padding:6px 4px;font-family:var(--font-display);font-weight:500">${r+1}</td>
+                    ${rot.map(pair => `<td style="padding:6px 4px;text-align:center;font-size:11px">${pair.map(id => id+1).join('·')}</td>`).join('')}
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// CUSTOM CONFIRM & TOAST (native confirm() is blocked in sandboxed iframes)
+// ============================================================
+function showConfirm(title, message, { danger = false, confirmLabel = 'Confirmer', cancelLabel = 'Annuler' } = {}) {
+  return new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = `
+      <div class="modal-card" role="dialog" aria-modal="true">
+        <h3>${escapeHtml(title)}</h3>
+        <p>${escapeHtml(message)}</p>
+        <div class="modal-actions">
+          <button class="modal-btn cancel">${escapeHtml(cancelLabel)}</button>
+          <button class="modal-btn confirm ${danger ? 'danger' : ''}">${escapeHtml(confirmLabel)}</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    const done = (v) => {
+      overlay.remove();
+      resolve(v);
+    };
+    overlay.querySelector('.cancel').onclick = () => done(false);
+    overlay.querySelector('.confirm').onclick = () => done(true);
+    overlay.onclick = (e) => { if (e.target === overlay) done(false); };
+  });
+}
+
+function showToast(message, duration = 2500) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = message;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), duration);
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+function attachEventHandlers(route) {
+  // Capitaine login
+  document.querySelectorAll('[data-action="cap-login"]').forEach(btn => {
+    btn.onclick = () => {
+      const teamId = parseInt(document.getElementById('cap-team-select').value, 10);
+      const code = document.getElementById('cap-code-input').value.trim();
+      const errEl = document.getElementById('cap-error');
+      if (isNaN(teamId)) {
+        errEl.textContent = 'Veuillez sélectionner une équipe.';
+        errEl.style.display = 'block';
+        return;
+      }
+      const team = state.config.teams[teamId];
+      if (team.code !== code) {
+        errEl.textContent = 'Code incorrect.';
+        errEl.style.display = 'block';
+        return;
+      }
+      (window.setSessionCap || setSessionCap)({ teamId });
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="cap-logout"]').forEach(btn => {
+    btn.onclick = () => {
+      (window.setSessionCap || setSessionCap)(null);
+      render();
+    };
+  });
+
+  // Responsable login
+  document.querySelectorAll('[data-action="resp-login"]').forEach(btn => {
+    btn.onclick = () => {
+      const atelierKey = document.getElementById('resp-atelier-select').value;
+      const code = document.getElementById('resp-code-input').value.trim();
+      const errEl = document.getElementById('resp-error');
+      if (!atelierKey) {
+        errEl.textContent = 'Veuillez sélectionner un atelier.';
+        errEl.style.display = 'block';
+        return;
+      }
+      if (code !== 'CAPEO2026') {
+        errEl.textContent = 'Code incorrect.';
+        errEl.style.display = 'block';
+        return;
+      }
+      (window.setSessionResp || setSessionResp)({ atelierKey });
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="resp-logout"]').forEach(btn => {
+    btn.onclick = () => {
+      (window.setSessionResp || setSessionResp)(null);
+      render();
+    };
+  });
+
+  // Responsable outcome selector (standard)
+  // Responsable: row expand/collapse
+  document.querySelectorAll('[data-resp-toggle]').forEach(btn => {
+    btn.onclick = () => {
+      const n = parseInt(btn.dataset.respToggle, 10);
+      window._respExpanded = (window._respExpanded === n) ? null : n;
+      render();
+    };
+  });
+
+  // Responsable standard outcome selector (any rotation)
+  document.querySelectorAll('[data-outcome]').forEach(btn => {
+    btn.onclick = async () => {
+      const session = (window.getSessionResp || getSessionResp)();
+      if (!session) return;
+      const atelier = EPREUVES.find(e => e.key === session.atelierKey);
+      const rotation = parseInt(btn.dataset.rotation, 10);
+      if (isNaN(rotation)) return;
+      const pairs = getAtelierScheduleForAllRotations(atelier.key);
+      const teamIds = pairs[rotation - 1];
+      if (!teamIds || teamIds.length !== 2) return;
+      const outcome = btn.dataset.outcome;
+
+      let pointsA, pointsB;
+      if (outcome === 'A') { pointsA = 2; pointsB = 0; }
+      else if (outcome === 'B') { pointsA = 0; pointsB = 2; }
+      else { pointsA = 1; pointsB = 1; }
+
+      state.scores[`${teamIds[0]}-${atelier.key}`] = { points: pointsA, rotation };
+      state.scores[`${teamIds[1]}-${atelier.key}`] = { points: pointsB, rotation };
+      await saveState();
+      render();
+    };
+  });
+
+  // Responsable physical outcome selector (any rotation, keyed storage)
+  document.querySelectorAll('[data-phys]').forEach(btn => {
+    btn.onclick = async () => {
+      const session = (window.getSessionResp || getSessionResp)();
+      if (!session) return;
+      const atelier = EPREUVES.find(e => e.key === session.atelierKey);
+      if (!atelier.physical) return;
+      const rotation = parseInt(btn.dataset.rotation, 10);
+      if (isNaN(rotation)) return;
+      const pairs = getAtelierScheduleForAllRotations(atelier.key);
+      const teamIds = pairs[rotation - 1];
+      if (!teamIds || teamIds.length !== 2) return;
+
+      const phys = btn.dataset.phys; // 'foot' or 'volley'
+      const outcome = btn.dataset.physOutcome;
+
+      if (!state.scoresPhysical) state.scoresPhysical = {};
+      const keyA = `${teamIds[0]}-${rotation}`;
+      const keyB = `${teamIds[1]}-${rotation}`;
+      if (!state.scoresPhysical[keyA]) state.scoresPhysical[keyA] = { foot: null, volley: null };
+      if (!state.scoresPhysical[keyB]) state.scoresPhysical[keyB] = { foot: null, volley: null };
+
+      let ptsA, ptsB;
+      if (outcome === 'A') { ptsA = 2; ptsB = 0; }
+      else if (outcome === 'B') { ptsA = 0; ptsB = 2; }
+      else { ptsA = 1; ptsB = 1; }
+
+      state.scoresPhysical[keyA][phys] = ptsA;
+      state.scoresPhysical[keyB][phys] = ptsB;
+
+      // Recompute the main /4 score for each team for the P atelier.
+      // Each team visits P exactly once — that rotation becomes their P score.
+      for (const tid of teamIds) {
+        const k = `${tid}-${rotation}`;
+        const p = state.scoresPhysical[k];
+        const footPts = p.foot ?? 0;
+        const volPts = p.volley ?? 0;
+        state.scores[`${tid}-P`] = { points: footPts + volPts, rotation };
+      }
+
+      await saveState();
+      render();
+    };
+  });
+
+  // Admin controls
+  document.querySelectorAll('[data-action="start"]').forEach(btn => {
+    btn.onclick = async () => {
+      if (state.currentRotation === 0) state.currentRotation = 1;
+      else state.currentRotation += 1;
+      state.phase = 'epreuve';
+      state.timerEnd = Date.now() + EPREUVE_DURATION * 1000;
+      state.timerPaused = false;
+      await saveState();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="pause"]').forEach(btn => {
+    btn.onclick = async () => {
+      state.timerRemaining = getTimerRemaining();
+      state.timerPaused = true;
+      await saveState();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="resume"]').forEach(btn => {
+    btn.onclick = async () => {
+      state.timerEnd = Date.now() + (state.timerRemaining || 0) * 1000;
+      state.timerPaused = false;
+      state.timerRemaining = null;
+      await saveState();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="skip-phase"]').forEach(btn => {
+    btn.onclick = async () => {
+      const ok = await showConfirm(
+        'Passer à la phase suivante',
+        'Le minuteur va sauter immédiatement à la phase suivante. Confirmer ?',
+        { confirmLabel: 'Passer' }
+      );
+      if (!ok) return;
+      if (state.phase === 'epreuve') {
+        state.phase = 'transition';
+        state.timerEnd = Date.now() + TRANSITION_DURATION * 1000;
+        state.timerPaused = false;
+      } else if (state.phase === 'transition') {
+        if (state.currentRotation < N_ROTATIONS) {
+          state.currentRotation += 1;
+          state.phase = 'epreuve';
+          state.timerEnd = Date.now() + EPREUVE_DURATION * 1000;
+          state.timerPaused = false;
+        } else {
+          state.currentRotation = N_ROTATIONS + 1;
+          state.phase = 'idle';
+          state.timerEnd = null;
+        }
+      }
+      await saveState();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="goto-rot"]').forEach(btn => {
+    btn.onclick = async () => {
+      const r = parseInt(btn.dataset.rot, 10);
+      const ok = await showConfirm(
+        `Aller à la rotation ${r}`,
+        'Cela va relancer le minuteur à zéro sur cette rotation. Les scores déjà saisis sont conservés.',
+        { confirmLabel: 'Y aller' }
+      );
+      if (!ok) return;
+      state.currentRotation = r;
+      state.phase = 'epreuve';
+      state.timerEnd = Date.now() + EPREUVE_DURATION * 1000;
+      state.timerPaused = false;
+      await saveState();
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="goto-screen"]').forEach(btn => {
+    btn.onclick = async () => {
+      const url = window.location.origin + window.location.pathname + '#/live';
+      const w = window.open(url, '_blank');
+      if (!w || w.closed || typeof w.closed === 'undefined') {
+        try {
+          await navigator.clipboard.writeText(url);
+          showToast('URL du live copiée — collez-la dans un nouvel onglet');
+        } catch {
+          await showConfirm(
+            'Ouvrir le live',
+            `Copiez cette URL dans un nouvel onglet :\n\n${url}`,
+            { confirmLabel: 'OK', cancelLabel: 'Fermer' }
+          );
+        }
+      }
+    };
+  });
+  document.querySelectorAll('[data-action="reset-all"]').forEach(btn => {
+    btn.onclick = async () => {
+      const ok = await showConfirm(
+        'Tout réinitialiser',
+        'Toutes les données (scores, rotation en cours, minuteur) vont être effacées. Les noms et codes d\'équipes sont conservés. Cette action est irréversible.',
+        { danger: true, confirmLabel: 'Effacer tout' }
+      );
+      if (!ok) return;
+      state.currentRotation = 0;
+      state.phase = 'idle';
+      state.timerEnd = null;
+      state.timerPaused = false;
+      state.timerRemaining = null;
+      state.scores = {};
+      state.scoresPhysical = {};
+      await saveState();
+      render();
+      showToast('Challenge réinitialisé');
+    };
+  });
+  document.querySelectorAll('[data-action="reset-challenge"]').forEach(btn => {
+    btn.onclick = async () => {
+      const ok = await showConfirm(
+        'Redémarrer le challenge',
+        'Les scores seront effacés. Confirmer ?',
+        { confirmLabel: 'Redémarrer' }
+      );
+      if (!ok) return;
+      state.currentRotation = 0;
+      state.phase = 'idle';
+      state.timerEnd = null;
+      state.timerPaused = false;
+      state.scores = {};
+      state.scoresPhysical = {};
+      await saveState();
+      render();
+    };
+  });
+
+  // Config editors
+  document.querySelectorAll('[data-config="team-name"]').forEach(inp => {
+    inp.onblur = async () => {
+      const idx = parseInt(inp.dataset.idx, 10);
+      state.config.teams[idx].name = inp.value.trim() || `Équipe ${idx+1}`;
+      await saveState();
+    };
+  });
+  document.querySelectorAll('[data-config="team-code"]').forEach(inp => {
+    inp.onblur = async () => {
+      const idx = parseInt(inp.dataset.idx, 10);
+      state.config.teams[idx].code = inp.value.trim();
+      await saveState();
+    };
+  });
+
+  // Briefing carousel navigation
+  document.querySelectorAll('[data-brief-action]').forEach(btn => {
+    btn.onclick = () => {
+      const action = btn.dataset.briefAction;
+      if (action === 'next' && briefingSlide < BRIEFING_SLIDES.length - 1) {
+        briefingSlide++;
+        render();
+      } else if (action === 'prev' && briefingSlide > 0) {
+        briefingSlide--;
+        render();
+      } else if (action === 'live') {
+        location.hash = '#/live';
+      }
+    };
+  });
+  document.querySelectorAll('[data-brief-go]').forEach(btn => {
+    btn.onclick = () => {
+      briefingSlide = parseInt(btn.dataset.briefGo, 10);
+      render();
+    };
+  });
+
+  // Teams calculator on briefing slide 5
+  const teamsCalcInput = document.getElementById('teams-calc-input');
+  if (teamsCalcInput) {
+    teamsCalcInput.oninput = async () => {
+      const v = parseInt(teamsCalcInput.value, 10);
+      state.participantCount = isNaN(v) ? null : v;
+      // Update the result block without full re-render (to preserve focus)
+      const resultEl = document.getElementById('teams-calc-result');
+      if (resultEl) {
+        resultEl.innerHTML = renderTeamsCalcResult(state.participantCount);
+      }
+      await saveState();
+    };
+  }
+
+  // Captain name inputs on briefing slide 5
+  document.querySelectorAll('[data-captain-idx]').forEach(inp => {
+    // Save on blur (when user tabs out / clicks away) to avoid saving on every keystroke
+    inp.onblur = async () => {
+      const idx = parseInt(inp.dataset.captainIdx, 10);
+      const newVal = inp.value.trim();
+      const oldVal = state.config.teams[idx].captain || '';
+      if (newVal === oldVal) return;
+      state.config.teams[idx].captain = newVal;
+      await saveState();
+      // Toggle visual "filled" state without full re-render
+      const card = inp.closest('.brief-captain-card');
+      if (card) card.classList.toggle('filled', !!newVal);
+    };
+    // Also save on Enter key
+    inp.onkeydown = (e) => {
+      if (e.key === 'Enter') inp.blur();
+    };
+  });
+}
+
+// Keyboard arrows for briefing carousel (global listener, once)
+if (!window._capeoKeyboardAttached) {
+  window._capeoKeyboardAttached = true;
+  document.addEventListener('keydown', (e) => {
+    if (getRoute() !== 'screen') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight' && briefingSlide < BRIEFING_SLIDES.length - 1) {
+      briefingSlide++;
+      render();
+    } else if (e.key === 'ArrowLeft' && briefingSlide > 0) {
+      briefingSlide--;
+      render();
+    }
+  });
+}
+
+// ============================================================
+// UTIL
+// ============================================================
+function escapeHtml(s) {
+  if (typeof s !== 'string') return '';
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function escapeAttr(s) { return escapeHtml(s); }
+
+// ============================================================
+// INIT
+// ============================================================
+(async () => {
+  await loadState();
+  render();
+})();
+</script>
+</body>
+</html>

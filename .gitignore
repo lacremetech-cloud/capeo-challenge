@@ -1,0 +1,10 @@
+# Supabase credentials (never commit)
+config.js
+
+# Supabase local dev
+supabase/.temp/
+supabase/functions/.env
+
+# OS
+.DS_Store
+Thumbs.db
