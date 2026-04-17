@@ -2616,7 +2616,7 @@ function renderTeamsCalcResult(count) {
 // BRIEFING CAROUSEL (projection d'accueil, avant le lancement)
 // ============================================================
 let briefingSlide = 0;
-const BRIEFING_SLIDES = ['welcome', 'epreuves', 'atelier', 'teams', 'webapp', 'go'];
+const BRIEFING_SLIDES = ['welcome', 'concept', 'epreuves', 'atelier', 'teams', 'webapp', 'go'];
 
 function renderBriefing() {
   const slideKey = BRIEFING_SLIDES[briefingSlide];
@@ -2660,27 +2660,16 @@ function renderBriefingSlide(key) {
     `;
   }
 
-  if (key === 'epreuves') {
-    const epreuveDescs = {
-      'C': 'Quiz en équipes. Culture islamique, réactivité et mémoire collective.',
-      'A': 'Création artistique collective autour d\'un message à transmettre.',
-      'P': 'Défi sportif en deux temps : football puis volley. Énergie et coopération.',
-      'E': 'Rédaction et transmission d\'un message aux générations futures.',
-      'O': 'Mission terrain sous contraintes de budget et de temps.'
-    };
-    const epreuvePts = {
-      'C': '/ 2 points', 'A': '/ 2 points', 'P': '/ 4 points (2 + 2)', 'E': '/ 2 points', 'O': '/ 2 points'
-    };
+  if (key === 'concept') {
     return `
       <div class="brief-slide">
-        <div class="brief-kicker">Un parcours en cinq temps · c·a·p·e·o</div>
-        <h1 class="brief-title">Cinq <em>intelligences</em></h1>
+        <div class="brief-kicker">Le concept</div>
+        <h1 class="brief-title">Cinq épreuves.<br/><em>Un seul objectif.</em></h1>
         <p class="brief-lead">
-          Chaque équipe traverse les cinq ateliers en cinq rotations successives.
-          Chaque épreuve sollicite une dimension différente — intellectuelle,
-          créative, physique, oratoire, pratique.
+          Dix équipes. Cinq ateliers. Une seule gagnante.
+          Toutes les intelligences convoquées — tête, corps, cœur, voix, geste.
         </p>
-        <div class="brief-stats brief-stats-3" style="margin-bottom:1.5rem">
+        <div class="brief-stats brief-stats-3">
           <div class="brief-stat">
             <div class="brief-stat-num">10</div>
             <div class="brief-stat-label">Équipes intergénérationnelles</div>
@@ -2694,6 +2683,29 @@ function renderBriefingSlide(key) {
             <div class="brief-stat-label">De challenge</div>
           </div>
         </div>
+      </div>
+    `;
+  }
+
+  if (key === 'epreuves') {
+    const epreuveDescs = {
+      'C': 'Quiz collectif. Mémoire, réflexes, connaissances.',
+      'A': 'Créer ensemble un message qui vous ressemble.',
+      'P': 'Football, puis volley. Tactique et énergie.',
+      'E': 'Rédiger, dire, transmettre aux générations qui suivent.',
+      'O': 'Une mission, un budget, un temps limité. Débrouillez-vous.'
+    };
+    const epreuvePts = {
+      'C': 'sur 2 points', 'A': 'sur 2 points', 'P': 'sur 4 points', 'E': 'sur 2 points', 'O': 'sur 2 points'
+    };
+    return `
+      <div class="brief-slide">
+        <div class="brief-kicker">Les cinq épreuves · C · A · P · E · O</div>
+        <h1 class="brief-title">Cinq terrains,<br/><em>cinq façons de gagner.</em></h1>
+        <p class="brief-lead">
+          Aucune équipe ne domine partout. Chaque épreuve sollicite une dimension
+          différente — l'une d'entre vous y brillera.
+        </p>
         <div class="brief-epreuves">
           ${EPREUVES.map(e => `
             <div class="brief-epreuve">
@@ -2712,37 +2724,37 @@ function renderBriefingSlide(key) {
     return `
       <div class="brief-slide">
         <div class="brief-kicker">Comment fonctionne un atelier</div>
-        <h1 class="brief-title">Deux équipes, <em>vingt-cinq minutes</em></h1>
+        <h1 class="brief-title">Deux équipes.<br/>Vingt-cinq minutes.<br/><em>Un duel.</em></h1>
         <p class="brief-lead">
-          Chaque atelier accueille deux équipes qui s'y affrontent. À la fin de
-          l'épreuve, la responsable attribue les points à chaque équipe.
+          Pas de temps mort. Pas de faux rythme.
+          Dès le top départ, tout compte.
         </p>
         <div class="brief-atelier-grid">
           <div class="brief-atelier-step">
             <div class="brief-atelier-step-num">1</div>
-            <div class="brief-atelier-step-title">Les deux équipes arrivent</div>
+            <div class="brief-atelier-step-title">Vos deux équipes arrivent</div>
             <div class="brief-atelier-step-desc">
-              Chaque rotation amène deux équipes dans le même atelier. Elles se mesurent l'une à l'autre.
+              À chaque rotation, vous affrontez une autre équipe dans un atelier. Toujours différente.
             </div>
           </div>
           <div class="brief-atelier-step">
             <div class="brief-atelier-step-num">2</div>
-            <div class="brief-atelier-step-title">25 minutes d'épreuve</div>
+            <div class="brief-atelier-step-title">L'épreuve commence</div>
             <div class="brief-atelier-step-desc">
-              La responsable encadre, observe, évalue. Puis 5 minutes de transition pour changer d'atelier.
+              25 minutes d'intensité. Puis 5 minutes pour souffler et rejoindre l'atelier suivant.
             </div>
           </div>
           <div class="brief-atelier-step">
             <div class="brief-atelier-step-num">3</div>
-            <div class="brief-atelier-step-title">Les points sont saisis</div>
+            <div class="brief-atelier-step-title">Les points tombent</div>
             <div class="brief-atelier-step-desc">
-              Victoire <strong style="color:var(--accent)">2 points</strong> · Égalité <strong style="color:var(--gold)">1 point</strong> · Défaite <strong style="color:var(--muted)">0 point</strong>.
+              Victoire <strong style="color:var(--accent)">2 pts</strong> · Égalité <strong style="color:var(--gold)">1 pt</strong> · Défaite <strong style="color:var(--muted)">0 pt</strong>. Saisis en direct par la responsable.
             </div>
           </div>
         </div>
         <div class="brief-atelier-footer">
           <div class="brief-atelier-footer-item">
-            <div class="brief-atelier-footer-label">Score max par épreuve</div>
+            <div class="brief-atelier-footer-label">Points max par épreuve</div>
             <div class="brief-atelier-footer-value">2</div>
           </div>
           <div class="brief-atelier-footer-item">
