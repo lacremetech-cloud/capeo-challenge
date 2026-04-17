@@ -2220,6 +2220,7 @@ const N_TEAMS = 10;
 const N_ROTATIONS = 5;
 const EPREUVE_DURATION = 25 * 60; // 25 min in seconds
 const TRANSITION_DURATION = 5 * 60; // 5 min
+const ADMIN_CODE = 'ADMIN2026'; // ← change this code to whatever you want
 
 // Rotation schedule: teams[rotation][atelierIndex] = [teamIdxA, teamIdxB]
 // Designed so each team visits each atelier exactly once across 5 rotations.
@@ -2400,6 +2401,7 @@ window.addEventListener('hashchange', render);
 // Local session (which team / atelier chosen on this device)
 const SESSION_KEY_CAP = 'capeo:session:cap';
 const SESSION_KEY_RESP = 'capeo:session:resp';
+const SESSION_KEY_ADMIN = 'capeo:session:admin';
 function getSessionCap() {
   try { return JSON.parse(sessionStorage.getItem(SESSION_KEY_CAP) || 'null'); } catch { return null; }
 }
@@ -2412,17 +2414,25 @@ function getSessionResp() {
 function setSessionResp(v) {
   sessionStorage.setItem(SESSION_KEY_RESP, JSON.stringify(v));
 }
+function getSessionAdmin() {
+  try { return JSON.parse(sessionStorage.getItem(SESSION_KEY_ADMIN) || 'null'); } catch { return null; }
+}
+function setSessionAdmin(v) {
+  sessionStorage.setItem(SESSION_KEY_ADMIN, JSON.stringify(v));
+}
 
 // Note: sessionStorage is forbidden in the artifact guidance, but the app runs
 // hosted (Vercel) where it works fine. For local fallback, use in-memory.
 // If sessionStorage throws, fall back to window memory.
-let _sessCap = null, _sessResp = null;
+let _sessCap = null, _sessResp = null, _sessAdmin = null;
 try { sessionStorage.getItem('test'); } catch {
   // override with memory
   window.getSessionCap = () => _sessCap;
   window.setSessionCap = (v) => { _sessCap = v; };
   window.getSessionResp = () => _sessResp;
   window.setSessionResp = (v) => { _sessResp = v; };
+  window.getSessionAdmin = () => _sessAdmin;
+  window.setSessionAdmin = (v) => { _sessAdmin = v; };
 }
 
 // ============================================================
@@ -2560,7 +2570,6 @@ function renderRoleBar(route) {
     { k: 'live',    label: 'Live',    hash: '#/live' },
     { k: 'cap',     label: 'Capitaine', hash: '#/cap' },
     { k: 'resp',    label: 'Responsable', hash: '#/resp' },
-    { k: 'admin',   label: 'Admin',   hash: '#/admin' },
   ];
   return `
     <div class="role-bar">
@@ -3326,7 +3335,26 @@ function renderRespLogin() {
 // ============================================================
 // ADMIN
 // ============================================================
+function renderAdminLogin() {
+  return `
+    <div class="mobile-view fade-in">
+      <div class="mobile-header">
+        <div class="kicker">Accès restreint</div>
+        <h1>Console<br><em>organisatrice</em></h1>
+      </div>
+      <div class="login-card">
+        <label class="form-label">Code d'accès</label>
+        <input type="password" id="admin-code-input" placeholder="Code organisatrice" autocomplete="off" />
+        <div class="error-msg" id="admin-error" style="display:none"></div>
+        <button class="submit-btn" data-action="admin-login">Accéder à la console</button>
+      </div>
+    </div>
+  `;
+}
+
 function renderAdmin() {
+  const adminSession = (window.getSessionAdmin || getSessionAdmin)();
+  if (!adminSession) return renderAdminLogin();
   const remaining = getTimerRemaining();
   const leaderboard = getLeaderboard();
   const phaseLabel = state.phase === 'idle' ? 'En attente' :
@@ -3571,6 +3599,26 @@ function attachEventHandlers(route) {
   document.querySelectorAll('[data-action="resp-logout"]').forEach(btn => {
     btn.onclick = () => {
       (window.setSessionResp || setSessionResp)(null);
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-action="admin-login"]').forEach(btn => {
+    btn.onclick = () => {
+      const code = document.getElementById('admin-code-input').value.trim();
+      const errEl = document.getElementById('admin-error');
+      if (code !== ADMIN_CODE) {
+        errEl.textContent = 'Code incorrect.';
+        errEl.style.display = 'block';
+        return;
+      }
+      (window.setSessionAdmin || setSessionAdmin)({ ok: true });
+      render();
+    };
+  });
+  document.querySelectorAll('[data-action="admin-logout"]').forEach(btn => {
+    btn.onclick = () => {
+      (window.setSessionAdmin || setSessionAdmin)(null);
       render();
     };
   });
