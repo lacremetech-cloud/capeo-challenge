@@ -2483,10 +2483,34 @@ function playBeep() {
   } catch(e) {}
 }
 
+function playEndAlarm() {
+  try {
+    if (!_audioCtx) return;
+    if (_audioCtx.state === 'suspended') _audioCtx.resume();
+    const t = _audioCtx.currentTime;
+    // 3 ascending beeps — long, fort, marqué
+    [0, 0.35, 0.70].forEach((offset, i) => {
+      const freq = [660, 880, 1100][i];
+      const osc  = _audioCtx.createOscillator();
+      const gain = _audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(_audioCtx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, t + offset);
+      gain.gain.linearRampToValueAtTime(0.5, t + offset + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + offset + 0.28);
+      osc.start(t + offset);
+      osc.stop(t + offset + 0.3);
+    });
+  } catch(e) {}
+}
+
 setInterval(() => {
   if (state.phase !== 'idle' && !state.timerPaused && state.timerEnd && Date.now() >= state.timerEnd) {
     if (state.phase === 'epreuve') {
       // Switch to transition
+      playEndAlarm();
       state.phase = 'transition';
       state.timerEnd = Date.now() + TRANSITION_DURATION * 1000;
       saveState();
@@ -3435,6 +3459,7 @@ function renderAdmin() {
 
         <button class="admin-btn" data-action="goto-screen">Ouvrir le live</button>
         <button class="admin-btn" data-action="test-alarm" title="Simule les 65 dernières secondes d'une épreuve">🔔 Tester l'alarme</button>
+        <button class="admin-btn" data-action="test-end-alarm" title="Joue la sonnerie de fin">🔕 Tester la sonnerie fin</button>
         <button class="admin-btn danger" data-action="reset-all">Tout réinitialiser</button>
       </div>
 
@@ -3826,6 +3851,12 @@ function attachEventHandlers(route) {
       state.timerPaused = false;
       render();
       showToast('Alarme dans ~5 secondes — montez le volume !');
+    };
+  });
+  document.querySelectorAll('[data-action="test-end-alarm"]').forEach(btn => {
+    btn.onclick = () => {
+      playEndAlarm();
+      showToast('Sonnerie de fin jouée');
     };
   });
 
