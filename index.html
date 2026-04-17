@@ -2801,8 +2801,11 @@ function renderBriefingSlide(key) {
 
         <div class="brief-captains-section">
           <div class="brief-captains-header">
-            <div class="brief-captains-title">Noms des capitaines</div>
-            <div class="brief-captains-hint">À mesure que les équipes se forment, saisissez le prénom de chaque capitaine</div>
+            <div>
+              <div class="brief-captains-title">Noms des capitaines</div>
+              <div class="brief-captains-hint">À mesure que les équipes se forment, saisissez le prénom de chaque capitaine</div>
+            </div>
+            <button class="admin-btn danger" data-action="reset-teams" style="flex-shrink:0;font-size:12px;padding:6px 14px">Réinitialiser</button>
           </div>
           <div class="brief-captains-grid">
             ${state.config.teams.map((t, i) => `
@@ -3833,6 +3836,22 @@ function attachEventHandlers(route) {
       state.scoresPhysical = {};
       await saveState();
       render();
+    };
+  });
+
+  document.querySelectorAll('[data-action="reset-teams"]').forEach(btn => {
+    btn.onclick = async () => {
+      const ok = await showConfirm(
+        'Réinitialiser',
+        'Le nombre de participantes et tous les prénoms des capitaines vont être effacés. Continuer ?',
+        { danger: true, confirmLabel: 'Effacer' }
+      );
+      if (!ok) return;
+      state.participantCount = null;
+      state.config.teams.forEach(t => { t.captain = ''; });
+      await saveState();
+      render();
+      showToast('Calcul et capitaines réinitialisés');
     };
   });
 
