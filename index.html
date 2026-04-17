@@ -422,6 +422,9 @@
     letter-spacing: -0.02em;
     font-feature-settings: 'tnum' 1;
   }
+  .leaderboard-list.blurred { filter: blur(8px); user-select: none; pointer-events: none; transition: filter 0.6s ease; }
+  .leaderboard-list.blurred:hover { filter: blur(8px); }
+  .leaderboard-reveal-hint { text-align:center; font-size:12px; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-top:10px; }
   .leaderboard-score-max {
     font-size: 12px;
     color: var(--muted);
@@ -2295,6 +2298,7 @@ let state = {
   timerRemaining: null, // used when paused
   scores: {},           // "teamId-atelierKey": { points: number, rotation: number }
   participantCount: null, // total participants present (for team calc)
+  leaderboardRevealed: false, // true = classement visible sur #/live
   config: DEFAULT_CONFIG
 };
 
@@ -3030,7 +3034,7 @@ function renderLive() {
         <div>
           <div class="section-label">Classement</div>
           <div class="leaderboard">
-            <div class="leaderboard-list">
+            <div class="leaderboard-list ${state.leaderboardRevealed ? '' : 'blurred'}">
               ${leaderboard.map((t, i) => `
                 <div class="leaderboard-row ${i < 3 ? 'top-' + (i+1) : ''}">
                   <div class="leaderboard-rank">${i+1}</div>
@@ -3039,6 +3043,7 @@ function renderLive() {
                 </div>
               `).join('')}
             </div>
+            ${!state.leaderboardRevealed ? `<div class="leaderboard-reveal-hint">Classement masqué — dévoilement par l'organisatrice</div>` : ''}
           </div>
         </div>
       </div>
@@ -3466,8 +3471,9 @@ function renderAdmin() {
         ` : ''}
 
         <button class="admin-btn" data-action="goto-screen">Ouvrir le live</button>
-        <button class="admin-btn" data-action="test-alarm" title="Simule les 65 dernières secondes d'une épreuve">🔔 Tester l'alarme</button>
-        <button class="admin-btn" data-action="test-end-alarm" title="Joue la sonnerie de fin">🔕 Tester la sonnerie fin</button>
+        <button class="admin-btn ${state.leaderboardRevealed ? 'primary' : ''}" data-action="toggle-leaderboard">
+          ${state.leaderboardRevealed ? '🏆 Classement visible' : '🙈 Dévoiler le classement'}
+        </button>
         <button class="admin-btn danger" data-action="reset-all">Tout réinitialiser</button>
       </div>
 
@@ -3852,19 +3858,12 @@ function attachEventHandlers(route) {
       render();
     };
   });
-  document.querySelectorAll('[data-action="test-alarm"]').forEach(btn => {
-    btn.onclick = () => {
-      state.phase = 'epreuve';
-      state.timerEnd = Date.now() + 65000;
-      state.timerPaused = false;
+  document.querySelectorAll('[data-action="toggle-leaderboard"]').forEach(btn => {
+    btn.onclick = async () => {
+      state.leaderboardRevealed = !state.leaderboardRevealed;
+      await saveState();
       render();
-      showToast('Alarme dans ~5 secondes — montez le volume !');
-    };
-  });
-  document.querySelectorAll('[data-action="test-end-alarm"]').forEach(btn => {
-    btn.onclick = () => {
-      playEndAlarm();
-      showToast('Sonnerie de fin jouée');
+      showToast(state.leaderboardRevealed ? 'Classement dévoilé !' : 'Classement masqué');
     };
   });
 
