@@ -2616,7 +2616,7 @@ function renderTeamsCalcResult(count) {
 // BRIEFING CAROUSEL (projection d'accueil, avant le lancement)
 // ============================================================
 let briefingSlide = 0;
-const BRIEFING_SLIDES = ['welcome', 'concept', 'epreuves', 'atelier', 'teams', 'webapp', 'go'];
+const BRIEFING_SLIDES = ['welcome', 'epreuves', 'atelier', 'teams', 'webapp', 'go'];
 
 function renderBriefing() {
   const slideKey = BRIEFING_SLIDES[briefingSlide];
@@ -2660,33 +2660,6 @@ function renderBriefingSlide(key) {
     `;
   }
 
-  if (key === 'concept') {
-    return `
-      <div class="brief-slide">
-        <div class="brief-kicker">Le concept</div>
-        <h1 class="brief-title">Un parcours <em>en cinq temps</em></h1>
-        <p class="brief-lead">
-          Chaque équipe traverse les cinq ateliers en cinq rotations successives.
-          Aucun doublon, aucun temps mort — une expérience équitable pour toutes.
-        </p>
-        <div class="brief-stats brief-stats-3">
-          <div class="brief-stat">
-            <div class="brief-stat-num">10</div>
-            <div class="brief-stat-label">Équipes intergénérationnelles</div>
-          </div>
-          <div class="brief-stat">
-            <div class="brief-stat-num">5</div>
-            <div class="brief-stat-label">Épreuves</div>
-          </div>
-          <div class="brief-stat">
-            <div class="brief-stat-num"><em>2h30</em></div>
-            <div class="brief-stat-label">De challenge</div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
   if (key === 'epreuves') {
     const epreuveDescs = {
       'C': 'Quiz en équipes. Culture islamique, réactivité et mémoire collective.',
@@ -2700,12 +2673,27 @@ function renderBriefingSlide(key) {
     };
     return `
       <div class="brief-slide">
-        <div class="brief-kicker">Les cinq épreuves · c·a·p·e·o</div>
+        <div class="brief-kicker">Un parcours en cinq temps · c·a·p·e·o</div>
         <h1 class="brief-title">Cinq <em>intelligences</em></h1>
         <p class="brief-lead">
+          Chaque équipe traverse les cinq ateliers en cinq rotations successives.
           Chaque épreuve sollicite une dimension différente — intellectuelle,
           créative, physique, oratoire, pratique.
         </p>
+        <div class="brief-stats brief-stats-3" style="margin-bottom:1.5rem">
+          <div class="brief-stat">
+            <div class="brief-stat-num">10</div>
+            <div class="brief-stat-label">Équipes intergénérationnelles</div>
+          </div>
+          <div class="brief-stat">
+            <div class="brief-stat-num">5</div>
+            <div class="brief-stat-label">Épreuves</div>
+          </div>
+          <div class="brief-stat">
+            <div class="brief-stat-num"><em>2h30</em></div>
+            <div class="brief-stat-label">De challenge</div>
+          </div>
+        </div>
         <div class="brief-epreuves">
           ${EPREUVES.map(e => `
             <div class="brief-epreuve">
