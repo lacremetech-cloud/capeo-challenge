@@ -2624,6 +2624,21 @@ async function saveScores(scorePatch, physicalPatch = null) {
   }
 }
 
+// Targeted patch: updates only the provided top-level keys in Supabase,
+// leaving every other key intact.  Prevents one device from clobbering
+// fields it doesn't own (e.g. resp writing stale timerEnd, admin writing stale scores).
+async function saveStatePatch(patch) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  if (_supabase) {
+    try {
+      await _supabase.rpc('save_state_patch', { p_patch: patch });
+      storageMode = 'supabase';
+    } catch(e) {
+      await saveState(); // fallback if migration not yet applied
+    }
+  }
+}
+
 // Real-time sync: Supabase Realtime when configured, localStorage polling as fallback
 if (_supabase) {
   _supabase
@@ -2891,7 +2906,7 @@ setInterval(() => {
       playEndAlarm();
       state.phase = 'transition';
       state.timerEnd = Date.now() + TRANSITION_DURATION * 1000;
-      saveState();
+      saveStatePatch({ phase: state.phase, timerEnd: state.timerEnd, timerPaused: false, currentRotation: state.currentRotation });
     } else if (state.phase === 'transition') {
       if (state.currentRotation < N_ROTATIONS) {
         state.currentRotation += 1;
@@ -2901,7 +2916,7 @@ setInterval(() => {
         state.phase = 'idle';
         state.timerEnd = null;
       }
-      saveState();
+      saveStatePatch({ phase: state.phase, timerEnd: state.timerEnd, timerPaused: false, timerRemaining: null, currentRotation: state.currentRotation });
     }
     render();
   }
@@ -4220,7 +4235,7 @@ function attachEventHandlers(route) {
       state.phase = 'epreuve';
       state.timerEnd = Date.now() + EPREUVE_DURATION * 1000;
       state.timerPaused = false;
-      await saveState();
+      await saveStatePatch({ phase: state.phase, timerEnd: state.timerEnd, timerPaused: false, timerRemaining: null, currentRotation: state.currentRotation });
       render();
     };
   });
@@ -4228,7 +4243,7 @@ function attachEventHandlers(route) {
     btn.onclick = async () => {
       state.timerRemaining = getTimerRemaining();
       state.timerPaused = true;
-      await saveState();
+      await saveStatePatch({ timerPaused: true, timerRemaining: state.timerRemaining });
       render();
     };
   });
@@ -4237,7 +4252,7 @@ function attachEventHandlers(route) {
       state.timerEnd = Date.now() + (state.timerRemaining || 0) * 1000;
       state.timerPaused = false;
       state.timerRemaining = null;
-      await saveState();
+      await saveStatePatch({ timerEnd: state.timerEnd, timerPaused: false, timerRemaining: null });
       render();
     };
   });
@@ -4265,7 +4280,7 @@ function attachEventHandlers(route) {
           state.timerEnd = null;
         }
       }
-      await saveState();
+      await saveStatePatch({ phase: state.phase, timerEnd: state.timerEnd, timerPaused: state.timerPaused, timerRemaining: null, currentRotation: state.currentRotation });
       render();
     };
   });
@@ -4282,7 +4297,7 @@ function attachEventHandlers(route) {
       state.phase = 'epreuve';
       state.timerEnd = Date.now() + EPREUVE_DURATION * 1000;
       state.timerPaused = false;
-      await saveState();
+      await saveStatePatch({ phase: state.phase, timerEnd: state.timerEnd, timerPaused: false, timerRemaining: null, currentRotation: state.currentRotation });
       render();
     };
   });
@@ -4293,7 +4308,7 @@ function attachEventHandlers(route) {
   document.querySelectorAll('[data-action="toggle-leaderboard"]').forEach(btn => {
     btn.onclick = async () => {
       state.leaderboardRevealed = !state.leaderboardRevealed;
-      await saveState();
+      await saveStatePatch({ leaderboardRevealed: state.leaderboardRevealed });
       render();
       showToast(state.leaderboardRevealed ? 'Classement dévoilé !' : 'Classement masqué');
     };
@@ -4366,7 +4381,7 @@ function attachEventHandlers(route) {
       if (!ok) return;
       state.participantCount = null;
       state.config.teams.forEach(t => { t.captain = ''; });
-      await saveState();
+      await saveStatePatch({ participantCount: null, config: state.config });
       render();
       showToast('Calcul et capitaines réinitialisés');
     };
@@ -4377,14 +4392,14 @@ function attachEventHandlers(route) {
     inp.onblur = async () => {
       const idx = parseInt(inp.dataset.idx, 10);
       state.config.teams[idx].name = inp.value.trim() || `Équipe ${idx+1}`;
-      await saveState();
+      await saveStatePatch({ config: state.config });
     };
   });
   document.querySelectorAll('[data-config="team-code"]').forEach(inp => {
     inp.onblur = async () => {
       const idx = parseInt(inp.dataset.idx, 10);
       state.config.teams[idx].code = inp.value.trim();
-      await saveState();
+      await saveStatePatch({ config: state.config });
     };
   });
 
@@ -4421,7 +4436,7 @@ function attachEventHandlers(route) {
       if (resultEl) {
         resultEl.innerHTML = renderTeamsCalcResult(state.participantCount);
       }
-      await saveState();
+      await saveStatePatch({ participantCount: state.participantCount });
     };
   }
 
@@ -4434,7 +4449,7 @@ function attachEventHandlers(route) {
       const oldVal = state.config.teams[idx].captain || '';
       if (newVal === oldVal) return;
       state.config.teams[idx].captain = newVal;
-      await saveState();
+      await saveStatePatch({ config: state.config });
       // Toggle visual "filled" state without full re-render
       const card = inp.closest('.brief-captain-card');
       if (card) card.classList.toggle('filled', !!newVal);
