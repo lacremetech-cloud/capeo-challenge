@@ -723,6 +723,46 @@
     font-weight: 500;
     letter-spacing: -0.01em;
   }
+  .cap-status-location {
+    position: relative;
+    margin-top: 8px;
+    padding: 10px 14px;
+    background: rgba(196, 150, 60, 0.15);
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+  }
+  .cap-status-location-arrow {
+    color: var(--gold);
+    font-size: 18px;
+  }
+  .cap-status-location-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(250, 246, 237, 0.75);
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+  .cap-status-location-value {
+    font-size: 16px;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--gold);
+  }
+  .cap-next-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cap-next-location {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    font-family: var(--font-body);
+  }
   .cap-next-empty {
     font-family: var(--font-display);
     font-size: 18px;
@@ -2283,11 +2323,11 @@
 // CONFIG
 // ============================================================
 const EPREUVES = [
-  { key: 'C', name: 'Culture',      maxPts: 2, physical: false },
-  { key: 'A', name: 'Artistique',   maxPts: 2, physical: false },
-  { key: 'P', name: 'Physique',     maxPts: 4, physical: true  },
-  { key: 'E', name: 'Éloquence',    maxPts: 2, physical: false },
-  { key: 'O', name: 'Organisation', maxPts: 2, physical: false },
+  { key: 'C', name: 'Culture',      maxPts: 2, physical: false, location: 'Grande salle du haut' },
+  { key: 'A', name: 'Artistique',   maxPts: 2, physical: false, location: 'Le porche' },
+  { key: 'P', name: 'Physique',     maxPts: 4, physical: true,  location: 'Terrains de sport' },
+  { key: 'E', name: 'Éloquence',    maxPts: 2, physical: false, location: 'Réfectoire' },
+  { key: 'O', name: 'Organisation', maxPts: 2, physical: false, location: 'Réfectoire' },
 ];
 const N_TEAMS = 10;
 const N_ROTATIONS = 5;
@@ -3243,6 +3283,11 @@ function renderCap() {
           <div class="kicker">Atelier en cours · Rotation ${state.currentRotation}</div>
           <div class="cap-status-letter">${currentAtelier.key}</div>
           <div class="cap-status-name">${currentAtelier.name}</div>
+          <div class="cap-status-location">
+            <span class="cap-status-location-arrow">→</span>
+            <span class="cap-status-location-label">RDV au</span>
+            <span class="cap-status-location-value">${currentAtelier.location}</span>
+          </div>
           <div class="cap-status-timer">
             <div class="cap-status-timer-label">${state.phase === 'transition' ? 'Transition' : state.phase === 'epreuve' ? 'Temps restant' : 'En attente'}</div>
             <div class="cap-status-timer-value" data-timer>${formatTime(remaining)}</div>
@@ -3264,7 +3309,10 @@ function renderCap() {
         ${nextAtelier ? `
           <div class="cap-next-content">
             <div class="cap-next-letter">${nextAtelier.key}</div>
-            <div class="cap-next-name">${nextAtelier.name}</div>
+            <div class="cap-next-info">
+              <div class="cap-next-name">${nextAtelier.name}</div>
+              <div class="cap-next-location">→ ${nextAtelier.location}</div>
+            </div>
           </div>
         ` : `
           <div class="cap-next-empty">${state.currentRotation >= N_ROTATIONS ? "Aucun — c'est le dernier" : "À venir"}</div>
