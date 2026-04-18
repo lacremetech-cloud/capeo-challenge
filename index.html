@@ -723,6 +723,91 @@
     font-weight: 500;
     letter-spacing: -0.01em;
   }
+  .cap-brief {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+  .cap-brief .kicker {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .cap-brief-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--terracotta);
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .cap-brief-intro {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+  .cap-brief-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+  }
+  .cap-brief-list li {
+    font-size: 14px;
+    color: var(--ink);
+    padding: 6px 0 6px 18px;
+    position: relative;
+    font-family: var(--font-display);
+    font-weight: 500;
+  }
+  .cap-brief-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--terracotta);
+    border-radius: 50%;
+    transform: translateY(-50%);
+  }
+  .cap-brief-rules {
+    display: flex;
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+  }
+  .cap-brief-rule {
+    flex: 1;
+    background: var(--bg-soft);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .cap-brief-rule-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .cap-brief-rule-value {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--accent);
+  }
   .cap-status-location {
     position: relative;
     margin-top: 8px;
@@ -2960,7 +3045,7 @@ function renderBriefingSlide(key) {
       'A': 'Créer ensemble un message qui vous ressemble.',
       'P': 'Football, puis volley. Tactique et énergie.',
       'E': 'Rédiger, dire, transmettre aux générations qui suivent.',
-      'O': 'Une mission, un budget, un temps limité. Débrouillez-vous.'
+      'O': 'Une chasse au trésor au village : 10 objets à rapporter, 20 € max, ticket de caisse obligatoire.'
     };
     const epreuvePts = {
       'C': 'sur 2 points', 'A': 'sur 2 points', 'P': 'sur 4 points', 'E': 'sur 2 points', 'O': 'sur 2 points'
@@ -3303,6 +3388,38 @@ function renderCap() {
           </div>
         </div>
       `}
+
+      ${currentAtelier && currentAtelier.key === 'O' ? `
+        <div class="cap-brief cap-brief-organisation">
+          <div class="kicker">Consignes de l'atelier</div>
+          <div class="cap-brief-title">Chasse au trésor</div>
+          <div class="cap-brief-intro">
+            Trouvez ces 10 objets au village, ramenez-les ici.
+          </div>
+          <ul class="cap-brief-list">
+            <li>Casquette</li>
+            <li>Coupe-ongles</li>
+            <li>Dissolvant</li>
+            <li>Carte postale</li>
+            <li>Yop</li>
+            <li>4 couleurs</li>
+            <li>T-shirt avec une illustration</li>
+            <li>Lunettes de soleil</li>
+            <li>Tasbih</li>
+            <li>Boîte de sucre</li>
+          </ul>
+          <div class="cap-brief-rules">
+            <div class="cap-brief-rule">
+              <span class="cap-brief-rule-label">Budget max</span>
+              <span class="cap-brief-rule-value">20 €</span>
+            </div>
+            <div class="cap-brief-rule">
+              <span class="cap-brief-rule-label">Preuve</span>
+              <span class="cap-brief-rule-value">Ticket de caisse</span>
+            </div>
+          </div>
+        </div>
+      ` : ''}
 
       <div class="cap-next">
         <div class="kicker">Prochain atelier</div>
