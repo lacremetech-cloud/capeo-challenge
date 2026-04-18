@@ -2606,6 +2606,24 @@ async function saveState() {
   }
 }
 
+// Atomic score save — merges ONLY the score keys, never overwrites the rest of the state.
+// Prevents race conditions when admin and resp save simultaneously.
+async function saveScores(scorePatch, physicalPatch = null) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  if (_supabase) {
+    try {
+      await _supabase.rpc('merge_scores', {
+        p_scores: scorePatch,
+        p_physical: physicalPatch
+      });
+      storageMode = 'supabase';
+    } catch(e) {
+      // RPC not available (dev / migration not run) — fall back to full save
+      await saveState();
+    }
+  }
+}
+
 // Real-time sync: Supabase Realtime when configured, localStorage polling as fallback
 if (_supabase) {
   _supabase
@@ -4119,9 +4137,14 @@ function attachEventHandlers(route) {
       else if (outcome === 'B') { pointsA = 0; pointsB = 2; }
       else { pointsA = 1; pointsB = 1; }
 
-      state.scores[`${teamIds[0]}-${atelier.key}`] = { points: pointsA, rotation };
-      state.scores[`${teamIds[1]}-${atelier.key}`] = { points: pointsB, rotation };
-      await saveState();
+      const entryA = { points: pointsA, rotation };
+      const entryB = { points: pointsB, rotation };
+      state.scores[`${teamIds[0]}-${atelier.key}`] = entryA;
+      state.scores[`${teamIds[1]}-${atelier.key}`] = entryB;
+      await saveScores({
+        [`${teamIds[0]}-${atelier.key}`]: entryA,
+        [`${teamIds[1]}-${atelier.key}`]: entryB
+      });
       render();
     };
   });
@@ -4158,15 +4181,21 @@ function attachEventHandlers(route) {
 
       // Recompute the main /4 score for each team for the P atelier.
       // Each team visits P exactly once — that rotation becomes their P score.
+      const scoresPatch = {};
       for (const tid of teamIds) {
         const k = `${tid}-${rotation}`;
         const p = state.scoresPhysical[k];
         const footPts = p.foot ?? 0;
         const volPts = p.volley ?? 0;
-        state.scores[`${tid}-P`] = { points: footPts + volPts, rotation };
+        const entry = { points: footPts + volPts, rotation };
+        state.scores[`${tid}-P`] = entry;
+        scoresPatch[`${tid}-P`] = entry;
       }
 
-      await saveState();
+      await saveScores(scoresPatch, {
+        [keyA]: state.scoresPhysical[keyA],
+        [keyB]: state.scoresPhysical[keyB]
+      });
       render();
     };
   });
