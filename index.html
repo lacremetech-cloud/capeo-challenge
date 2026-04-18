@@ -837,6 +837,25 @@
     font-style: italic;
     color: var(--gold);
   }
+  .cap-status-responsible {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-body);
+  }
+  .cap-status-responsible-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(250, 246, 237, 0.6);
+    font-weight: 500;
+  }
+  .cap-status-responsible-value {
+    font-size: 14px;
+    font-style: italic;
+    color: rgba(250, 246, 237, 0.85);
+  }
   .cap-next-info {
     display: flex;
     flex-direction: column;
@@ -846,6 +865,11 @@
     font-size: 13px;
     color: var(--muted);
     font-style: italic;
+    font-family: var(--font-body);
+  }
+  .cap-next-responsible {
+    font-size: 12px;
+    color: var(--muted);
     font-family: var(--font-body);
   }
   .cap-next-empty {
@@ -2163,6 +2187,11 @@
     padding-top: 10px;
     border-top: 1px solid var(--line);
   }
+  .brief-epreuve-resp {
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+  }
 
   /* Slide 4: Points system */
   .brief-points-grid {
@@ -2408,11 +2437,11 @@
 // CONFIG
 // ============================================================
 const EPREUVES = [
-  { key: 'C', name: 'Culture',      maxPts: 2, physical: false, location: 'Grande salle du haut' },
-  { key: 'A', name: 'Artistique',   maxPts: 2, physical: false, location: 'Le porche' },
-  { key: 'P', name: 'Physique',     maxPts: 4, physical: true,  location: 'Terrains de sport' },
-  { key: 'E', name: 'Éloquence',    maxPts: 2, physical: false, location: 'Réfectoire' },
-  { key: 'O', name: 'Organisation', maxPts: 2, physical: false, location: 'Réfectoire' },
+  { key: 'C', name: 'Culture',      maxPts: 2, physical: false, location: 'Grande salle du haut', responsible: 'Ansa Soumiya' },
+  { key: 'A', name: 'Artistique',   maxPts: 2, physical: false, location: 'Le porche',             responsible: 'Ansa Leila' },
+  { key: 'P', name: 'Physique',     maxPts: 4, physical: true,  location: 'Terrains de sport',     responsible: 'Kawthar Abdelwafi' },
+  { key: 'E', name: 'Éloquence',    maxPts: 2, physical: false, location: 'Réfectoire',            responsible: 'Ansa Cheyma' },
+  { key: 'O', name: 'Organisation', maxPts: 2, physical: false, location: 'Réfectoire',            responsible: 'Ansa Dounia' },
 ];
 const N_TEAMS = 10;
 const N_ROTATIONS = 5;
@@ -3065,6 +3094,7 @@ function renderBriefingSlide(key) {
               <div class="brief-epreuve-name">${e.name}</div>
               <div class="brief-epreuve-desc">${epreuveDescs[e.key]}</div>
               <div class="brief-epreuve-pts">${epreuvePts[e.key]}</div>
+              <div class="brief-epreuve-resp">Avec ${e.responsible}</div>
             </div>
           `).join('')}
         </div>
@@ -3373,6 +3403,10 @@ function renderCap() {
             <span class="cap-status-location-label">RDV au</span>
             <span class="cap-status-location-value">${currentAtelier.location}</span>
           </div>
+          <div class="cap-status-responsible">
+            <span class="cap-status-responsible-label">Responsable</span>
+            <span class="cap-status-responsible-value">${currentAtelier.responsible}</span>
+          </div>
           <div class="cap-status-timer">
             <div class="cap-status-timer-label">${state.phase === 'transition' ? 'Transition' : state.phase === 'epreuve' ? 'Temps restant' : 'En attente'}</div>
             <div class="cap-status-timer-value" data-timer>${formatTime(remaining)}</div>
@@ -3429,6 +3463,7 @@ function renderCap() {
             <div class="cap-next-info">
               <div class="cap-next-name">${nextAtelier.name}</div>
               <div class="cap-next-location">→ ${nextAtelier.location}</div>
+              <div class="cap-next-responsible">Responsable : ${nextAtelier.responsible}</div>
             </div>
           </div>
         ` : `
