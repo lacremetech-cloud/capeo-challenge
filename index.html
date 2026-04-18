@@ -2630,8 +2630,13 @@ if (_supabase) {
     .channel('capeo-state')
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'event_state' }, (payload) => {
       if (!payload.new || !payload.new.data) return;
+      const prevPhase = state.phase;
       state = { ...state, ...payload.new.data };
       if (!state.config) state.config = DEFAULT_CONFIG;
+      // Play end alarm on non-admin devices when the admin transitions epreuve → transition
+      if (prevPhase === 'epreuve' && state.phase === 'transition' && getRoute() !== 'admin') {
+        playEndAlarm();
+      }
       const active = document.activeElement;
       const isTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT');
       if (!isTyping) render();
@@ -2873,15 +2878,21 @@ function playEndAlarm() {
 }
 
 setInterval(() => {
-  if (state.phase !== 'idle' && !state.timerPaused && state.timerEnd && Date.now() >= state.timerEnd) {
+  const route = getRoute();
+
+  // Auto-advance the timer when it expires — ONLY on the admin device.
+  // All other devices just display the timer. Without this guard, every
+  // connected device would simultaneously write a new timerEnd to Supabase
+  // (each with a slightly different Date.now()), causing the timer to jump.
+  if (route === 'admin' &&
+      state.phase !== 'idle' && !state.timerPaused &&
+      state.timerEnd && Date.now() >= state.timerEnd) {
     if (state.phase === 'epreuve') {
-      // Switch to transition
       playEndAlarm();
       state.phase = 'transition';
       state.timerEnd = Date.now() + TRANSITION_DURATION * 1000;
       saveState();
     } else if (state.phase === 'transition') {
-      // Advance to next rotation
       if (state.currentRotation < N_ROTATIONS) {
         state.currentRotation += 1;
         state.phase = 'epreuve';
@@ -2892,9 +2903,10 @@ setInterval(() => {
       }
       saveState();
     }
+    render();
   }
-  // Re-render timer displays
-  const route = getRoute();
+
+  // Update timer displays on any route
   if (['screen', 'cap', 'admin', 'live', 'resp'].includes(route)) {
     updateTimerDisplays();
   }
