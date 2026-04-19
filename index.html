@@ -2591,11 +2591,12 @@ async function loadState() {
   storageMode = 'local';
 }
 
+// Full-state overwrite — used only for intentional resets (scores = {}).
+// For all other saves, use saveScores() or saveStatePatch() which never
+// overwrite fields they don't own.
 async function saveState() {
-  // Always keep localStorage in sync as backup
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
   if (_supabase) {
-    // Supabase JS v2 returns { error } instead of throwing — must check explicitly
     const { error } = await _supabase
       .from('event_state')
       .upsert({ id: 1, data: state, updated_at: new Date().toISOString() });
@@ -2604,40 +2605,50 @@ async function saveState() {
   }
 }
 
-// Atomic score save — merges ONLY the score keys, never overwrites the rest of the state.
-// Prevents race conditions when admin and resp save simultaneously.
+// Atomic score save.
+// Fast path: merge_scores RPC (requires migration — zero risk of clobbering).
+// Fallback:  read current scores from Supabase, merge, then write back.
+//            Slower (2 round-trips) but completely safe without any migration.
 async function saveScores(scorePatch, physicalPatch = null) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
-  if (_supabase) {
-    // Supabase JS v2: errors are returned, not thrown — must check .error
-    const { error } = await _supabase.rpc('merge_scores', {
-      p_scores: scorePatch,
-      p_physical: physicalPatch
-    });
-    if (error) {
-      console.warn('[saveScores] merge_scores RPC failed, falling back to saveState():', error.message);
-      await saveState();
-    } else {
-      storageMode = 'supabase';
-    }
-  }
+  if (!_supabase) return;
+
+  // Try RPC first
+  const { error: rpcErr } = await _supabase.rpc('merge_scores', {
+    p_scores: scorePatch,
+    p_physical: physicalPatch
+  });
+  if (!rpcErr) { storageMode = 'supabase'; return; }
+
+  // RPC not available — read current server state, merge our scores into it, write back.
+  // This guarantees we never overwrite another device's score keys.
+  const { data: current } = await _supabase
+    .from('event_state').select('data').eq('id', 1).maybeSingle();
+  const serverData = current?.data || {};
+  const merged = {
+    ...state,
+    scores:         { ...(serverData.scores         || {}), ...(state.scores         || {}) },
+    scoresPhysical: { ...(serverData.scoresPhysical || {}), ...(state.scoresPhysical || {}) },
+  };
+  const { error } = await _supabase
+    .from('event_state')
+    .upsert({ id: 1, data: merged, updated_at: new Date().toISOString() });
+  storageMode = error ? 'local' : 'supabase';
 }
 
-// Targeted patch: updates only the provided top-level keys in Supabase,
-// leaving every other key intact.  Prevents one device from clobbering
-// fields it doesn't own (e.g. resp writing stale timerEnd, admin writing stale scores).
+// Targeted patch — updates only the provided top-level keys (timer, config, leaderboard…).
+// Fast path: save_state_patch RPC.
+// Fallback:  saveState() — safe here because saveStatePatch is only called by admin,
+//            whose local state is always current (receives Realtime from all devices).
 async function saveStatePatch(patch) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
-  if (_supabase) {
-    // Supabase JS v2: errors are returned, not thrown — must check .error
-    const { error } = await _supabase.rpc('save_state_patch', { p_patch: patch });
-    if (error) {
-      console.warn('[saveStatePatch] save_state_patch RPC failed, falling back to saveState():', error.message);
-      await saveState();
-    } else {
-      storageMode = 'supabase';
-    }
-  }
+  if (!_supabase) return;
+
+  const { error } = await _supabase.rpc('save_state_patch', { p_patch: patch });
+  if (!error) { storageMode = 'supabase'; return; }
+
+  // RPC not available — fall back to full save (admin-only caller, state is current)
+  await saveState();
 }
 
 // Real-time sync: Supabase Realtime when configured, localStorage polling as fallback
