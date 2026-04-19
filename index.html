@@ -2595,14 +2595,12 @@ async function saveState() {
   // Always keep localStorage in sync as backup
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
   if (_supabase) {
-    try {
-      await _supabase
-        .from('event_state')
-        .upsert({ id: 1, data: state, updated_at: new Date().toISOString() });
-      storageMode = 'supabase';
-    } catch(e) {
-      storageMode = 'local';
-    }
+    // Supabase JS v2 returns { error } instead of throwing — must check explicitly
+    const { error } = await _supabase
+      .from('event_state')
+      .upsert({ id: 1, data: state, updated_at: new Date().toISOString() });
+    storageMode = error ? 'local' : 'supabase';
+    if (error) console.error('[saveState] upsert error:', error.message);
   }
 }
 
@@ -2611,15 +2609,16 @@ async function saveState() {
 async function saveScores(scorePatch, physicalPatch = null) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
   if (_supabase) {
-    try {
-      await _supabase.rpc('merge_scores', {
-        p_scores: scorePatch,
-        p_physical: physicalPatch
-      });
-      storageMode = 'supabase';
-    } catch(e) {
-      // RPC not available (dev / migration not run) — fall back to full save
+    // Supabase JS v2: errors are returned, not thrown — must check .error
+    const { error } = await _supabase.rpc('merge_scores', {
+      p_scores: scorePatch,
+      p_physical: physicalPatch
+    });
+    if (error) {
+      console.warn('[saveScores] merge_scores RPC failed, falling back to saveState():', error.message);
       await saveState();
+    } else {
+      storageMode = 'supabase';
     }
   }
 }
@@ -2630,11 +2629,13 @@ async function saveScores(scorePatch, physicalPatch = null) {
 async function saveStatePatch(patch) {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
   if (_supabase) {
-    try {
-      await _supabase.rpc('save_state_patch', { p_patch: patch });
+    // Supabase JS v2: errors are returned, not thrown — must check .error
+    const { error } = await _supabase.rpc('save_state_patch', { p_patch: patch });
+    if (error) {
+      console.warn('[saveStatePatch] save_state_patch RPC failed, falling back to saveState():', error.message);
+      await saveState();
+    } else {
       storageMode = 'supabase';
-    } catch(e) {
-      await saveState(); // fallback if migration not yet applied
     }
   }
 }
