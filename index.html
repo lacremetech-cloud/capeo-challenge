@@ -3299,7 +3299,7 @@ function renderBriefingSlide(key) {
       'A': 'Regardez une chorégraphie, apprenez-la en 5 min, puis reproduisez-la face à face.',
       'P': "Parcours sportif derrière la cuisine. L'équipe la plus performante l'emporte.",
       'E': 'Écrire une lettre à vous dans 10 ans.',
-      'O': '10 objets ont été cachés dans le domaine, à vous de les retrouver et les rapporter.'
+      'O': '10 objets ont été cachés dans le parking, à vous de les retrouver et les rapporter.'
     };
     const epreuvePts = {
       'C': 'sur 2 points', 'A': 'sur 2 points', 'P': 'sur 2 points', 'E': 'sur 2 points', 'O': 'sur 2 points'
@@ -3575,7 +3575,7 @@ function renderLive() {
                 <div class="leaderboard-row ${i < 3 ? 'top-' + (i+1) : ''}">
                   <div class="leaderboard-rank">${i+1}</div>
                   <div class="leaderboard-name">${escapeHtml(teamDisplayName(t))}</div>
-                  <div class="leaderboard-score">${t.score}<span class="leaderboard-score-max">/12</span></div>
+                  <div class="leaderboard-score">${t.score}<span class="leaderboard-score-max">/10</span></div>
                 </div>
               `).join('')}
             </div>
@@ -3707,7 +3707,7 @@ function renderCap() {
           <div class="kicker">Consignes de l'atelier</div>
           <div class="cap-brief-title">Chasse au trésor</div>
           <div class="cap-brief-intro">
-            10 objets ont été cachés dans le domaine, à vous de les retrouver et les rapporter.
+            10 objets ont été cachés dans le parking, à vous de les retrouver et les rapporter.
           </div>
         </div>
       ` : ''}
@@ -3750,7 +3750,7 @@ function renderCap() {
         </div>
         <div class="cap-total">
           <div class="cap-total-label">Total</div>
-          <div class="cap-total-value">${total}<span style="font-size:18px;color:var(--muted);"> / 12</span></div>
+          <div class="cap-total-value">${total}<span style="font-size:18px;color:var(--muted);"> / 10</span></div>
         </div>
       </div>
 
