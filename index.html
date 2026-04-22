@@ -3154,8 +3154,8 @@ function renderBriefingSlide(key) {
   if (key === 'epreuves') {
     const epreuveDescs = {
       'C': 'Quiz collectif. Mémoire, réflexes, connaissances.',
-      'A': 'Créer ensemble un message qui vous ressemble.',
-      'P': 'Football, puis volley. Tactique et énergie.',
+      'A': 'Regardez une chorégraphie, apprenez-la en 5 min, puis reproduisez-la face à face.',
+      'P': 'Parcours sportif en deux manches. La meilleure performance l'emporte.',
       'E': 'Rédiger, dire, transmettre aux générations qui suivent.',
       'O': 'Une chasse au trésor au village : 10 objets à rapporter, 20 € max, ticket de caisse obligatoire.'
     };
@@ -3223,7 +3223,7 @@ function renderBriefingSlide(key) {
             <div class="brief-atelier-footer-value">2</div>
           </div>
           <div class="brief-atelier-footer-item">
-            <div class="brief-atelier-footer-label">Sauf Physique (foot + volley)</div>
+            <div class="brief-atelier-footer-label">Sauf Physique (2 manches)</div>
             <div class="brief-atelier-footer-value"><em>4</em></div>
           </div>
           <div class="brief-atelier-footer-item">
@@ -3505,6 +3505,50 @@ function renderCap() {
           </div>
         </div>
       `}
+
+      ${currentAtelier && currentAtelier.key === 'A' ? `
+        <div class="cap-brief cap-brief-organisation">
+          <div class="kicker">Consignes de l'atelier</div>
+          <div class="cap-brief-title">Chorégraphie</div>
+          <div class="cap-brief-intro">
+            Regardez la chorégraphie, mémorisez-la, puis reproduisez-la face à l'autre équipe.
+          </div>
+          <div class="cap-brief-rules">
+            <div class="cap-brief-rule">
+              <span class="cap-brief-rule-label">Visionnage</span>
+              <span class="cap-brief-rule-value">5 min</span>
+            </div>
+            <div class="cap-brief-rule">
+              <span class="cap-brief-rule-label">Format</span>
+              <span class="cap-brief-rule-value">1 vs 1</span>
+            </div>
+            <div class="cap-brief-rule">
+              <span class="cap-brief-rule-label">Critère</span>
+              <span class="cap-brief-rule-value">Meilleure reproduction</span>
+            </div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${currentAtelier && currentAtelier.key === 'P' ? `
+        <div class="cap-brief cap-brief-organisation">
+          <div class="kicker">Consignes de l'atelier</div>
+          <div class="cap-brief-title">Parcours sportif</div>
+          <div class="cap-brief-intro">
+            Deux manches de parcours sportif. L'équipe avec la meilleure performance l'emporte.
+          </div>
+          <div class="cap-brief-rules">
+            <div class="cap-brief-rule">
+              <span class="cap-brief-rule-label">Format</span>
+              <span class="cap-brief-rule-value">2 manches</span>
+            </div>
+            <div class="cap-brief-rule">
+              <span class="cap-brief-rule-label">Points max</span>
+              <span class="cap-brief-rule-value">4 pts</span>
+            </div>
+          </div>
+        </div>
+      ` : ''}
 
       ${currentAtelier && currentAtelier.key === 'O' ? `
         <div class="cap-brief cap-brief-organisation">
@@ -3789,11 +3833,11 @@ function renderRespPhysicalInputs(teamIds, rotationNum) {
 
   return `
     <div class="resp-physical-notice">
-      Épreuve double : football + volley. Chaque match se note séparément.
+      Épreuve double : deux manches de parcours sportif. Chaque manche se note séparément.
     </div>
 
     <div class="resp-sub-section">
-      <div class="resp-sub-label">Football</div>
+      <div class="resp-sub-label">Manche 1</div>
       <div class="resp-outcome-selector">
         <button class="resp-outcome-btn ${outcomeLetter(footA, footB, 'A') ? 'win' : ''}"
                 data-phys="foot" data-phys-outcome="A" data-rotation="${rotationNum}">
@@ -3811,7 +3855,7 @@ function renderRespPhysicalInputs(teamIds, rotationNum) {
     </div>
 
     <div class="resp-sub-section">
-      <div class="resp-sub-label">Volley</div>
+      <div class="resp-sub-label">Manche 2</div>
       <div class="resp-outcome-selector">
         <button class="resp-outcome-btn ${outcomeLetter(volA, volB, 'A') ? 'win' : ''}"
                 data-phys="volley" data-phys-outcome="A" data-rotation="${rotationNum}">
