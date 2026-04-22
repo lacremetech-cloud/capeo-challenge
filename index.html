@@ -2465,7 +2465,7 @@
 const EPREUVES = [
   { key: 'C', name: 'Culture',      maxPts: 2, physical: false, location: 'Grande salle du haut', responsible: 'Ansa Soumiya' },
   { key: 'A', name: 'Artistique',   maxPts: 2, physical: false, location: 'Le porche',             responsible: 'Ansa Leila' },
-  { key: 'P', name: 'Physique',     maxPts: 4, physical: true,  location: 'Terrains de sport',     responsible: 'Kawthar Abdelwafi' },
+  { key: 'P', name: 'Physique',     maxPts: 2, physical: false, location: 'Derrière la cuisine',   responsible: 'Kawthar Abdelwafi' },
   { key: 'E', name: 'Éloquence',    maxPts: 2, physical: false, location: 'Réfectoire',            responsible: 'Ansa Cheyma' },
   { key: 'O', name: 'Organisation', maxPts: 2, physical: false, location: 'Réfectoire',            responsible: 'Ansa Dounia' },
 ];
@@ -3155,12 +3155,12 @@ function renderBriefingSlide(key) {
     const epreuveDescs = {
       'C': 'Quiz collectif. Mémoire, réflexes, connaissances.',
       'A': 'Regardez une chorégraphie, apprenez-la en 5 min, puis reproduisez-la face à face.',
-      'P': 'Parcours sportif en deux manches. La meilleure performance l'emporte.',
+      'P': 'Parcours sportif derrière la cuisine. L'équipe la plus performante l'emporte.',
       'E': 'Rédiger, dire, transmettre aux générations qui suivent.',
       'O': 'Une chasse au trésor au village : 10 objets à rapporter, 20 € max, ticket de caisse obligatoire.'
     };
     const epreuvePts = {
-      'C': 'sur 2 points', 'A': 'sur 2 points', 'P': 'sur 4 points', 'E': 'sur 2 points', 'O': 'sur 2 points'
+      'C': 'sur 2 points', 'A': 'sur 2 points', 'P': 'sur 2 points', 'E': 'sur 2 points', 'O': 'sur 2 points'
     };
     return `
       <div class="brief-slide">
@@ -3223,8 +3223,8 @@ function renderBriefingSlide(key) {
             <div class="brief-atelier-footer-value">2</div>
           </div>
           <div class="brief-atelier-footer-item">
-            <div class="brief-atelier-footer-label">Sauf Physique (2 manches)</div>
-            <div class="brief-atelier-footer-value"><em>4</em></div>
+            <div class="brief-atelier-footer-label">Tous les ateliers</div>
+            <div class="brief-atelier-footer-value">2</div>
           </div>
           <div class="brief-atelier-footer-item">
             <div class="brief-atelier-footer-label">Score total possible</div>
@@ -3535,16 +3535,16 @@ function renderCap() {
           <div class="kicker">Consignes de l'atelier</div>
           <div class="cap-brief-title">Parcours sportif</div>
           <div class="cap-brief-intro">
-            Deux manches de parcours sportif. L'équipe avec la meilleure performance l'emporte.
+            Parcours sportif derrière la cuisine. L'équipe la plus performante l'emporte.
           </div>
           <div class="cap-brief-rules">
             <div class="cap-brief-rule">
-              <span class="cap-brief-rule-label">Format</span>
-              <span class="cap-brief-rule-value">2 manches</span>
+              <span class="cap-brief-rule-label">Lieu</span>
+              <span class="cap-brief-rule-value">Derrière la cuisine</span>
             </div>
             <div class="cap-brief-rule">
               <span class="cap-brief-rule-label">Points max</span>
-              <span class="cap-brief-rule-value">4 pts</span>
+              <span class="cap-brief-rule-value">2 pts</span>
             </div>
           </div>
         </div>
